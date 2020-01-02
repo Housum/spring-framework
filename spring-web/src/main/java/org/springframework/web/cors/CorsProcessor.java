@@ -21,6 +21,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
+ *
+ * 处理跨域访问请求
+ *
  * A strategy that takes a request and a {@link CorsConfiguration} and updates
  * the response.
  *
@@ -38,6 +41,7 @@ import javax.servlet.http.HttpServletResponse;
 public interface CorsProcessor {
 
 	/**
+	 * 对跨域请求进行处理 如果需要拒绝请求的话 那么返回false
 	 * Process a request given a {@code CorsConfiguration}.
 	 * @param configuration the applicable CORS configuration (possibly {@code null})
 	 * @param request the current request

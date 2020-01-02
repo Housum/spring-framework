@@ -30,6 +30,10 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartResolver;
 
 /**
+ *
+ * 适用于multipart/form-data等复杂的情况 而RequestParam适合
+ * name-value简单的情况
+ *
  * Annotation that can be used to associate the part of a "multipart/form-data" request
  * with a method argument.
  *

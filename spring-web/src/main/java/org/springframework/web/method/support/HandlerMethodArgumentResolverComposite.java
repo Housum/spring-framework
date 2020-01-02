@@ -30,6 +30,9 @@ import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
 
 /**
+ * 组合 将所有的参数解析器组合在一块
+ *
+ *
  * Resolves method parameters by delegating to a list of registered {@link HandlerMethodArgumentResolver}s.
  * Previously resolved method parameters are cached for faster lookups.
  *
@@ -125,6 +128,8 @@ public class HandlerMethodArgumentResolverComposite implements HandlerMethodArgu
 	 * Find a registered {@link HandlerMethodArgumentResolver} that supports the given method parameter.
 	 */
 	private HandlerMethodArgumentResolver getArgumentResolver(MethodParameter parameter) {
+
+		//缓存
 		HandlerMethodArgumentResolver result = this.argumentResolverCache.get(parameter);
 		if (result == null) {
 			for (HandlerMethodArgumentResolver methodArgumentResolver : this.argumentResolvers) {

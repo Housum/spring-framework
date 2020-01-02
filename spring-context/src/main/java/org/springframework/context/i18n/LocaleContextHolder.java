@@ -23,7 +23,11 @@ import org.springframework.core.NamedInheritableThreadLocal;
 import org.springframework.core.NamedThreadLocal;
 
 /**
- * Simple holder class that associates a LocaleContext instance
+ *
+ * 将Locale语系进行暴露 这样在整个生命周期过程中其他地方就可以直接
+ * 进行使用了
+ *
+ *s Simple holder class that associates a LocaleContext instance
  * with the current thread. The LocaleContext will be inherited
  * by any child threads spawned by the current thread if the
  * {@code inheritable} flag is set to {@code true}.

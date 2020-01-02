@@ -25,6 +25,9 @@ import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
 
 /**
+ *
+ * 根据URL映射的拦截器 只需要将其实例注册到实例中去就可以了
+ *
  * Contains and delegates calls to a {@link HandlerInterceptor} along with
  * include (and optionally exclude) path patterns to which the interceptor should apply.
  * Also provides matching logic to test if the interceptor applies to a given request path.
@@ -43,8 +46,10 @@ import org.springframework.web.servlet.ModelAndView;
  */
 public final class MappedInterceptor implements HandlerInterceptor {
 
+	//包含的
 	private final String[] includePatterns;
 
+	//排除的
 	private final String[] excludePatterns;
 
 	private final HandlerInterceptor interceptor;

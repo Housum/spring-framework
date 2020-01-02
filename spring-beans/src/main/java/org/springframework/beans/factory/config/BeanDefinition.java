@@ -21,6 +21,9 @@ import org.springframework.beans.MutablePropertyValues;
 import org.springframework.core.AttributeAccessor;
 
 /**
+ * Bean的定义阶段 在该阶段bean还木有被初始化 仅仅是保存了配置的东西 后面在获取实例的时候
+ * 将会进行初始化操作
+ *
  * A BeanDefinition describes a bean instance, which has property values,
  * constructor argument values, and further information supplied by
  * concrete implementations.
@@ -54,6 +57,8 @@ public interface BeanDefinition extends AttributeAccessor, BeanMetadataElement {
 
 
 	/**
+	 * 该BeanDefinition是用户端的类
+	 *
 	 * Role hint indicating that a {@code BeanDefinition} is a major part
 	 * of the application. Typically corresponds to a user-defined bean.
 	 */
@@ -71,6 +76,8 @@ public interface BeanDefinition extends AttributeAccessor, BeanMetadataElement {
 	int ROLE_SUPPORT = 1;
 
 	/**
+	 * 内部的
+	 *
 	 * Role hint indicating that a {@code BeanDefinition} is providing an
 	 * entirely background role and has no relevance to the end-user. This hint is
 	 * used when registering beans that are completely part of the internal workings
@@ -81,6 +88,8 @@ public interface BeanDefinition extends AttributeAccessor, BeanMetadataElement {
 
 	/**
 	 * Return the name of the parent definition of this bean definition, if any.
+	 * 如果存在父
+	 *
 	 */
 	String getParentName();
 
@@ -90,6 +99,7 @@ public interface BeanDefinition extends AttributeAccessor, BeanMetadataElement {
 	void setParentName(String parentName);
 
 	/**
+	 * 返回Bean的类
 	 * Return the current bean class name of this bean definition.
 	 * <p>Note that this does not have to be the actual class name used at runtime, in
 	 * case of a child definition overriding/inheriting the class name from its parent.
@@ -107,6 +117,7 @@ public interface BeanDefinition extends AttributeAccessor, BeanMetadataElement {
 
 	/**
 	 * Return the factory bean name, if any.
+	 * 返回工厂方法
 	 */
 	String getFactoryBeanName();
 
@@ -159,6 +170,7 @@ public interface BeanDefinition extends AttributeAccessor, BeanMetadataElement {
 
 	/**
 	 * Return the bean names that this bean depends on.
+	 * 返回依赖的定义
 	 */
 	String[] getDependsOn();
 
@@ -197,6 +209,9 @@ public interface BeanDefinition extends AttributeAccessor, BeanMetadataElement {
 	 * Return the constructor argument values for this bean.
 	 * <p>The returned instance can be modified during bean factory post-processing.
 	 * @return the ConstructorArgumentValues object (never {@code null})
+	 *
+	 * 构造函数的参数
+	 *
 	 */
 	ConstructorArgumentValues getConstructorArgumentValues();
 
@@ -204,6 +219,8 @@ public interface BeanDefinition extends AttributeAccessor, BeanMetadataElement {
 	 * Return the property values to be applied to a new instance of the bean.
 	 * <p>The returned instance can be modified during bean factory post-processing.
 	 * @return the MutablePropertyValues object (never {@code null})
+	 * 属性
+	 *
 	 */
 	MutablePropertyValues getPropertyValues();
 

@@ -30,6 +30,7 @@ import org.springframework.transaction.TransactionSystemException;
 import org.springframework.transaction.TransactionUsageException;
 import org.springframework.transaction.support.SmartTransactionObject;
 
+
 /**
  * Convenient base class for JDBC-aware transaction objects.
  * Can contain a {@link ConnectionHolder}, and implements the
@@ -48,7 +49,6 @@ import org.springframework.transaction.support.SmartTransactionObject;
 public abstract class JdbcTransactionObjectSupport implements SavepointManager, SmartTransactionObject {
 
 	private static final Log logger = LogFactory.getLog(JdbcTransactionObjectSupport.class);
-
 
 	private ConnectionHolder connectionHolder;
 

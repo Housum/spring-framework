@@ -103,13 +103,24 @@ class BeanDefinitionValueResolver {
 	public Object resolveValueIfNecessary(Object argName, Object value) {
 		// We must check each value to see whether it requires a runtime reference
 		// to another bean to be resolved.
+
+		//org.springframework.beans.factory.xml.BeanDefinitionParserDelegate.parseConstructorArgElement
+		//org.springframework.beans.factory.xml.BeanDefinitionParserDelegate.parsePropertySubElement(org.w3c.dom.Element, org.springframework.beans.factory.config.BeanDefinition, java.lang.String)
+		//将之前解析出来的构造函数参数解析出来 其中可能是Bean Bean的名称 或者其他
+
 		if (value instanceof RuntimeBeanReference) {
+			//如果参数是Bean引用的话ref-
 			RuntimeBeanReference ref = (RuntimeBeanReference) value;
 			return resolveReference(argName, ref);
 		}
 		else if (value instanceof RuntimeBeanNameReference) {
+			//idref 使用id引用的情况
+			//https://docs.spring.io/spring/docs/4.3.25.RELEASE/spring-framework-reference/htmlsingle/#beans-idref-element
 			String refName = ((RuntimeBeanNameReference) value).getBeanName();
+			//这里做一下解析 其中可能有表达式
 			refName = String.valueOf(doEvaluate(refName));
+
+			//if-ref的能力 检查是否存在这个Bean 但是其实引用的还是一个字符串 即Bean的名称
 			if (!this.beanFactory.containsBean(refName)) {
 				throw new BeanDefinitionStoreException(
 						"Invalid bean name '" + refName + "' in bean reference for " + argName);
@@ -117,17 +128,23 @@ class BeanDefinitionValueResolver {
 			return refName;
 		}
 		else if (value instanceof BeanDefinitionHolder) {
+			//这种情况是内部定义了一个Bean
 			// Resolve BeanDefinitionHolder: contains BeanDefinition with name and aliases.
 			BeanDefinitionHolder bdHolder = (BeanDefinitionHolder) value;
+			//这一步其实就是将内部依赖的Bean给初始化了
 			return resolveInnerBean(argName, bdHolder.getBeanName(), bdHolder.getBeanDefinition());
 		}
 		else if (value instanceof BeanDefinition) {
+			//也是内部类
 			// Resolve plain BeanDefinition, without contained name: use dummy name.
 			BeanDefinition bd = (BeanDefinition) value;
 			String innerBeanName = "(inner bean)" + BeanFactoryUtils.GENERATED_BEAN_NAME_SEPARATOR +
 					ObjectUtils.getIdentityHexString(bd);
 			return resolveInnerBean(argName, innerBeanName, bd);
 		}
+
+		//下面这部分都是集合等等 拿到每一个元素进行递归解析
+		//org.springframework.beans.factory.xml.BeanDefinitionParserDelegate.parsePropertySubElement(org.w3c.dom.Element, org.springframework.beans.factory.config.BeanDefinition, java.lang.String)
 		else if (value instanceof ManagedArray) {
 			// May need to resolve contained runtime references.
 			ManagedArray array = (ManagedArray) value;
@@ -165,6 +182,7 @@ class BeanDefinitionValueResolver {
 			return resolveManagedMap(argName, (Map<?, ?>) value);
 		}
 		else if (value instanceof ManagedProperties) {
+			//属性
 			Properties original = (Properties) value;
 			Properties copy = new Properties();
 			for (Map.Entry<Object, Object> propEntry : original.entrySet()) {
@@ -181,12 +199,14 @@ class BeanDefinitionValueResolver {
 			return copy;
 		}
 		else if (value instanceof TypedStringValue) {
+			//字符串
 			// Convert value to target type here.
 			TypedStringValue typedStringValue = (TypedStringValue) value;
 			Object valueObject = evaluate(typedStringValue);
 			try {
 				Class<?> resolvedTargetType = resolveTargetType(typedStringValue);
 				if (resolvedTargetType != null) {
+					//对于值对象 进行类型的转换
 					return this.typeConverter.convertIfNecessary(valueObject, resolvedTargetType);
 				}
 				else {
@@ -316,22 +336,6 @@ class BeanDefinitionValueResolver {
 	}
 
 	/**
-	 * Checks the given bean name whether it is unique. If not already unique,
-	 * a counter is added, increasing the counter until the name is unique.
-	 * @param innerBeanName the original name for the inner bean
-	 * @return the adapted name for the inner bean
-	 */
-	private String adaptInnerBeanName(String innerBeanName) {
-		String actualInnerBeanName = innerBeanName;
-		int counter = 0;
-		while (this.beanFactory.isBeanNameInUse(actualInnerBeanName)) {
-			counter++;
-			actualInnerBeanName = innerBeanName + BeanFactoryUtils.GENERATED_BEAN_NAME_SEPARATOR + counter;
-		}
-		return actualInnerBeanName;
-	}
-
-	/**
 	 * Resolve a reference to another bean in the factory.
 	 */
 	private Object resolveReference(Object argName, RuntimeBeanReference ref) {
@@ -343,7 +347,7 @@ class BeanDefinitionValueResolver {
 					throw new BeanCreationException(
 							this.beanDefinition.getResourceDescription(), this.beanName,
 							"Can't resolve reference to bean '" + refName +
-							"' in parent factory: no parent factory available");
+									"' in parent factory: no parent factory available");
 				}
 				return this.beanFactory.getParentBeanFactory().getBean(refName);
 			}
@@ -358,6 +362,22 @@ class BeanDefinitionValueResolver {
 					this.beanDefinition.getResourceDescription(), this.beanName,
 					"Cannot resolve reference to bean '" + ref.getBeanName() + "' while setting " + argName, ex);
 		}
+	}
+
+	/**
+	 * Checks the given bean name whether it is unique. If not already unique,
+	 * a counter is added, increasing the counter until the name is unique.
+	 * @param innerBeanName the original name for the inner bean
+	 * @return the adapted name for the inner bean
+	 */
+	private String adaptInnerBeanName(String innerBeanName) {
+		String actualInnerBeanName = innerBeanName;
+		int counter = 0;
+		while (this.beanFactory.isBeanNameInUse(actualInnerBeanName)) {
+			counter++;
+			actualInnerBeanName = innerBeanName + BeanFactoryUtils.GENERATED_BEAN_NAME_SEPARATOR + counter;
+		}
+		return actualInnerBeanName;
 	}
 
 	/**

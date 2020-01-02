@@ -17,6 +17,8 @@
 package org.springframework.core.env;
 
 /**
+ * 解析占为符 ${}
+ *
  * Interface for resolving properties against any underlying source.
  *
  * @author Chris Beams

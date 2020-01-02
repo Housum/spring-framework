@@ -22,6 +22,9 @@ import javax.servlet.ServletContext;
 import org.springframework.context.ConfigurableApplicationContext;
 
 /**
+ *
+ * 配置能力
+ *
  * Interface to be implemented by configurable web application contexts.
  * Supported by {@link ContextLoader} and
  * {@link org.springframework.web.servlet.FrameworkServlet}.

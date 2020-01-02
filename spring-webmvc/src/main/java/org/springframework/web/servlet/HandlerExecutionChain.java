@@ -29,6 +29,8 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 
 /**
+ * 处理链
+ *
  * Handler execution chain, consisting of handler object and any handler interceptors.
  * Returned by HandlerMapping's {@link HandlerMapping#getHandler} method.
  *
@@ -40,10 +42,18 @@ public class HandlerExecutionChain {
 
 	private static final Log logger = LogFactory.getLog(HandlerExecutionChain.class);
 
+	/**
+	 * 处理器
+	 */
 	private final Object handler;
 
+	/**
+	 * 拦截链
+	 */
 	private HandlerInterceptor[] interceptors;
-
+	/**
+	 * 拦截链
+	 */
 	private List<HandlerInterceptor> interceptorList;
 
 	private int interceptorIndex = -1;
@@ -79,6 +89,7 @@ public class HandlerExecutionChain {
 
 
 	/**
+	 * 处理器
 	 * Return the handler object to execute.
 	 * @return the handler object
 	 */
@@ -121,6 +132,9 @@ public class HandlerExecutionChain {
 
 
 	/**
+	 *
+	 * 拦截器前置处理
+	 *
 	 * Apply preHandle methods of registered interceptors.
 	 * @return {@code true} if the execution chain should proceed with the
 	 * next interceptor or the handler itself. Else, DispatcherServlet assumes
@@ -142,6 +156,7 @@ public class HandlerExecutionChain {
 	}
 
 	/**
+	 * 拦截器后置处理
 	 * Apply postHandle methods of registered interceptors.
 	 */
 	void applyPostHandle(HttpServletRequest request, HttpServletResponse response, ModelAndView mv) throws Exception {

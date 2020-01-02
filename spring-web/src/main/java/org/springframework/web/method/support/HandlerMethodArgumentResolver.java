@@ -22,6 +22,12 @@ import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
 
 /**
+ *
+ * 将请求中请求参数转换成参数列表  比如请求传入的是一个JSON 但是
+ * 在咱们的处理器中设置的是一个对象 那么这个时候就需要将这部分
+ * 转换成对象
+ *
+ *
  * Strategy interface for resolving method parameters into argument values in
  * the context of a given request.
  *
@@ -32,6 +38,7 @@ import org.springframework.web.context.request.NativeWebRequest;
 public interface HandlerMethodArgumentResolver {
 
 	/**
+	 * 是否支持方法参数
 	 * Whether the given {@linkplain MethodParameter method parameter} is
 	 * supported by this resolver.
 	 * @param parameter the method parameter to check
@@ -41,6 +48,8 @@ public interface HandlerMethodArgumentResolver {
 	boolean supportsParameter(MethodParameter parameter);
 
 	/**
+	 * 解析成参数
+	 *
 	 * Resolves a method parameter into an argument value from a given request.
 	 * A {@link ModelAndViewContainer} provides access to the model for the
 	 * request. A {@link WebDataBinderFactory} provides a way to create

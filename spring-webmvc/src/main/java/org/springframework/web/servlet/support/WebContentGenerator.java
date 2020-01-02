@@ -38,6 +38,9 @@ import org.springframework.web.HttpSessionRequiredException;
 import org.springframework.web.context.support.WebApplicationObjectSupport;
 
 /**
+ *
+ * WEB内容控制 比如控制一些head信息 请求的方式
+ *
  * Convenient superclass for any kind of web content generator,
  * like {@link org.springframework.web.servlet.mvc.AbstractController}
  * and {@link org.springframework.web.servlet.mvc.WebContentInterceptor}.

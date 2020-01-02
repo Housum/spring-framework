@@ -30,6 +30,10 @@ import org.springframework.beans.factory.BeanFactory;
 import org.springframework.transaction.PlatformTransactionManager;
 
 /**
+ *
+ * 事务拦截器
+ * #org.springframework.transaction.config.AnnotationDrivenBeanDefinitionParser
+ *
  * AOP Alliance MethodInterceptor for declarative transaction
  * management using the common Spring transaction infrastructure
  * ({@link org.springframework.transaction.PlatformTransactionManager}).
@@ -87,6 +91,8 @@ public class TransactionInterceptor extends TransactionAspectSupport implements 
 
 	@Override
 	public Object invoke(final MethodInvocation invocation) throws Throwable {
+		//这里开始事务的拦截
+
 		// Work out the target class: may be {@code null}.
 		// The TransactionAttributeSource should be passed the target class
 		// as well as the method, which may be from an interface.

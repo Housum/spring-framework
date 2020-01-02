@@ -27,6 +27,9 @@ import org.springframework.core.NamedThreadLocal;
 import org.springframework.core.PriorityOrdered;
 
 /**
+ *
+ * @see org.springframework.aop.aspectj.autoproxy.AspectJAwareAdvisorAutoProxyCreator#extendAdvisors(java.util.List)
+ *
  * Interceptor that exposes the current {@link org.aopalliance.intercept.MethodInvocation}
  * as a thread-local object. We occasionally need to do this; for example, when a pointcut
  * (e.g. an AspectJ expression pointcut) needs to know the full invocation context.

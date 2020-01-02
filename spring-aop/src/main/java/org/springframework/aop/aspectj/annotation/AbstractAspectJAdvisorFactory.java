@@ -111,6 +111,7 @@ public abstract class AbstractAspectJAdvisorFactory implements AspectJAdvisorFac
 		if (!ajType.isAspect()) {
 			throw new NotAnAtAspectException(aspectClass);
 		}
+		//下面这两种类似原型 每次通知的时候就会生产一个对象
 		if (ajType.getPerClause().getKind() == PerClauseKind.PERCFLOW) {
 			throw new AopConfigException(aspectClass.getName() + " uses percflow instantiation model: " +
 					"This is not supported in Spring AOP.");

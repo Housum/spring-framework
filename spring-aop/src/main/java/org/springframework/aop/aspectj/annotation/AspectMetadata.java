@@ -32,6 +32,13 @@ import org.springframework.aop.framework.AopConfigException;
 import org.springframework.aop.support.ComposablePointcut;
 
 /**
+ *
+ *
+ * https://www.eclipse.org/aspectj/doc/released/progguide/index.html
+ *
+ *
+ * AspectJ注解元数据
+ *
  * Metadata for an AspectJ aspect class, with an additional Spring AOP pointcut
  * for the per clause.
  *
@@ -85,7 +92,9 @@ public class AspectMetadata implements Serializable {
 		Class<?> currClass = aspectClass;
 		AjType<?> ajType = null;
 		while (currClass != Object.class) {
+			//创建一个类型(aspectj框架中)
 			AjType<?> ajTypeToCheck = AjTypeSystem.getAjType(currClass);
+			//如果不是切面的话 那么一直往父类查询
 			if (ajTypeToCheck.isAspect()) {
 				ajType = ajTypeToCheck;
 				break;

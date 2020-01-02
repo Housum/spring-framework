@@ -26,6 +26,8 @@ import org.springframework.core.env.Environment;
 import org.springframework.core.io.ProtocolResolver;
 
 /**
+ * 配置化ApplicationContext
+ *
  * SPI interface to be implemented by most if not all application contexts.
  * Provides facilities to configure an application context in addition
  * to the application context client methods in the

@@ -21,6 +21,10 @@ import java.io.Serializable;
 import org.springframework.util.Assert;
 
 /**
+ *
+ *
+ * 回滚规则描述
+ *
  * Rule determining whether or not a given exception (and any subclasses)
  * should cause a rollback.
  *
@@ -35,6 +39,8 @@ import org.springframework.util.Assert;
 public class RollbackRuleAttribute implements Serializable{
 
 	/**
+	 * 默认的
+	 *
 	 * The {@link RollbackRuleAttribute rollback rule} for
 	 * {@link RuntimeException RuntimeExceptions}.
 	 */

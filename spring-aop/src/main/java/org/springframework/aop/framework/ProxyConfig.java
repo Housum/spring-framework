@@ -21,6 +21,8 @@ import java.io.Serializable;
 import org.springframework.util.Assert;
 
 /**
+ * AOP配置
+ *
  * Convenience superclass for configuration used in creating proxies,
  * to ensure that all proxy creators have consistent properties.
  *
@@ -32,16 +34,19 @@ public class ProxyConfig implements Serializable {
 
 	/** use serialVersionUID from Spring 1.2 for interoperability */
 	private static final long serialVersionUID = -8409359707199703185L;
-
-
+	/**
+	 * 是否使用CGLIB
+	 */
 	private boolean proxyTargetClass = false;
-
+	/**
+	 * 是否优化
+	 */
 	private boolean optimize = false;
-
 	boolean opaque = false;
-
+	/**
+	 *是否暴露被代理的对象
+	 */
 	boolean exposeProxy = false;
-
 	private boolean frozen = false;
 
 

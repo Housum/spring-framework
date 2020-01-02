@@ -19,6 +19,10 @@ package org.springframework.web.servlet;
 import javax.servlet.http.HttpServletRequest;
 
 /**
+ *
+ *
+ * 很关键的一个东西 将请求映射到具体的处理器上面去
+ *
  * Interface to be implemented by objects that define a mapping between
  * requests and handler objects.
  *
@@ -27,6 +31,8 @@ import javax.servlet.http.HttpServletRequest;
  * and {@link org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping}
  * are included in the framework. The former is the default if no
  * HandlerMapping bean is registered in the application context.
+ *
+ * 实现能够支持拦截器，最终拦截器和处理器会被封装在一个HandlerExecutionChain上面
  *
  * <p>HandlerMapping implementations can support mapped interceptors but do not
  * have to. A handler will always be wrapped in a {@link HandlerExecutionChain}
@@ -112,6 +118,8 @@ public interface HandlerMapping {
 	String PRODUCIBLE_MEDIA_TYPES_ATTRIBUTE = HandlerMapping.class.getName() + ".producibleMediaTypes";
 
 	/**
+	 * 获取请求处理的责任链
+	 *
 	 * Return a handler and any interceptors for this request. The choice may be made
 	 * on request URL, session state, or any factor the implementing class chooses.
 	 * <p>The returned HandlerExecutionChain contains a handler Object, rather than

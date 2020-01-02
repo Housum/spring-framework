@@ -17,6 +17,9 @@
 package org.springframework.web.context.support;
 
 /**
+ *
+ * 处理完一个Servlet请求事件
+ *
  * Servlet-specific subclass of RequestHandledEvent,
  * adding servlet-specific context information.
  *

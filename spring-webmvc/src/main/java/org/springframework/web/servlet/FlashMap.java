@@ -24,6 +24,8 @@ import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 
 /**
+ * 提供在两个请求间保留请求，比如重定向的这种请求
+ *
  * A FlashMap provides a way for one request to store attributes intended for
  * use in another. This is most commonly needed when redirecting from one URL
  * to another -- e.g. the Post/Redirect/Get pattern. A FlashMap is saved before

@@ -132,6 +132,8 @@ public abstract class AopProxyUtils {
 		Class<?>[] proxiedInterfaces = new Class<?>[specifiedInterfaces.length + nonUserIfcCount];
 		System.arraycopy(specifiedInterfaces, 0, proxiedInterfaces, 0, specifiedInterfaces.length);
 		int index = specifiedInterfaces.length;
+
+		//添加这三个类的代理
 		if (addSpringProxy) {
 			proxiedInterfaces[index] = SpringProxy.class;
 			index++;

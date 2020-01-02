@@ -157,6 +157,9 @@ public abstract class AbstractBeanDefinition extends BeanMetadataAttributeAccess
 
 	private boolean nonPublicAccessAllowed = true;
 
+	/**
+	 * 构造函数是严格的校验模式还是模糊的模式
+	 */
 	private boolean lenientConstructorResolution = true;
 
 	private ConstructorArgumentValues constructorArgumentValues;

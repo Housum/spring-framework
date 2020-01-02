@@ -17,6 +17,8 @@
 package org.springframework.context;
 
 /**
+ * isAutoStartup检测是否在ApplicationContext的refresh和shutdown的时候进行回调方法
+ *
  * An extension of the {@link Lifecycle} interface for those objects that require to
  * be started upon ApplicationContext refresh and/or shutdown in a particular order.
  * The {@link #isAutoStartup()} return value indicates whether this object should

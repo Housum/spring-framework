@@ -19,6 +19,8 @@ package org.springframework.transaction.interceptor;
 import java.lang.reflect.Method;
 
 /**
+ * 事务元数据获取
+ *
  * Strategy interface used by {@link TransactionInterceptor} for metadata retrieval.
  *
  * <p>Implementations know how to source transaction attributes, whether from configuration,
@@ -33,6 +35,8 @@ import java.lang.reflect.Method;
 public interface TransactionAttributeSource {
 
 	/**
+	 * 获取给定方法的事务属性 比如：事务隔离级别 事务传播行为 超时时间 异常回滚行为 是否可读
+	 *
 	 * Return the transaction attribute for the given method,
 	 * or {@code null} if the method is non-transactional.
 	 * @param method the method to introspect

@@ -88,6 +88,7 @@ public class DefaultLifecycleProcessor implements LifecycleProcessor, BeanFactor
 	 */
 	@Override
 	public void start() {
+		//启动时候 autoStartupOnly 意思是是否是自动启动的 比如ApplicationContext的refresh方法执行的时候
 		startBeans(false);
 		this.running = true;
 	}
@@ -103,12 +104,14 @@ public class DefaultLifecycleProcessor implements LifecycleProcessor, BeanFactor
 	 */
 	@Override
 	public void stop() {
+		//停止时候
 		stopBeans();
 		this.running = false;
 	}
 
 	@Override
 	public void onRefresh() {
+		//刷新的时候
 		startBeans(true);
 		this.running = true;
 	}
@@ -126,13 +129,18 @@ public class DefaultLifecycleProcessor implements LifecycleProcessor, BeanFactor
 
 
 	// internal helpers
-
 	private void startBeans(boolean autoStartupOnly) {
+		//对于有步骤的情况 可以通过实现org.springframework.context.Phased指定步骤 那么会按照步骤来
+		//值越小的将会越早被执行
 		Map<String, Lifecycle> lifecycleBeans = getLifecycleBeans();
+		//是为了分组
 		Map<Integer, LifecycleGroup> phases = new HashMap<Integer, LifecycleGroup>();
 		for (Map.Entry<String, ? extends Lifecycle> entry : lifecycleBeans.entrySet()) {
 			Lifecycle bean = entry.getValue();
+			//要么是实现了SmartLifecycle并且执行可以在autoStartupOnly情况下启动 要么
+			//当前就不是在autoStartupOnly在
 			if (!autoStartupOnly || (bean instanceof SmartLifecycle && ((SmartLifecycle) bean).isAutoStartup())) {
+				//获取当前的步骤 默认是0
 				int phase = getPhase(bean);
 				LifecycleGroup group = phases.get(phase);
 				if (group == null) {
@@ -142,6 +150,7 @@ public class DefaultLifecycleProcessor implements LifecycleProcessor, BeanFactor
 				group.add(entry.getKey(), bean);
 			}
 		}
+		//排序之后执行
 		if (phases.size() > 0) {
 			List<Integer> keys = new ArrayList<Integer>(phases.keySet());
 			Collections.sort(keys);
@@ -183,6 +192,7 @@ public class DefaultLifecycleProcessor implements LifecycleProcessor, BeanFactor
 	}
 
 	private void stopBeans() {
+		//执行stop
 		Map<String, Lifecycle> lifecycleBeans = getLifecycleBeans();
 		Map<Integer, LifecycleGroup> phases = new HashMap<Integer, LifecycleGroup>();
 		for (Map.Entry<String, Lifecycle> entry : lifecycleBeans.entrySet()) {
@@ -278,6 +288,7 @@ public class DefaultLifecycleProcessor implements LifecycleProcessor, BeanFactor
 			if ((this.beanFactory.containsSingleton(beanNameToRegister) &&
 					(!isFactoryBean || Lifecycle.class.isAssignableFrom(this.beanFactory.getType(beanNameToCheck)))) ||
 					SmartLifecycle.class.isAssignableFrom(this.beanFactory.getType(beanNameToCheck))) {
+				//获取
 				Lifecycle bean = this.beanFactory.getBean(beanNameToCheck, Lifecycle.class);
 				if (bean != this) {
 					beans.put(beanNameToRegister, bean);
@@ -307,6 +318,9 @@ public class DefaultLifecycleProcessor implements LifecycleProcessor, BeanFactor
 	 */
 	private class LifecycleGroup {
 
+		/**
+		 * 处于该phase的Lifecycle
+		 */
 		private final List<LifecycleGroupMember> members = new ArrayList<LifecycleGroupMember>();
 
 		private final int phase;

@@ -46,8 +46,6 @@ import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionValidationException;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.beans.factory.support.GenericBeanDefinition;
-import org.springframework.cglib.core.Signature;
-import org.springframework.cglib.proxy.InterfaceMaker;
 import org.springframework.context.ResourceLoaderAware;
 import org.springframework.core.Conventions;
 import org.springframework.core.Ordered;

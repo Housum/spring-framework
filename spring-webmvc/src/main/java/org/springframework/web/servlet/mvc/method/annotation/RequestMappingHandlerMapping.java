@@ -181,8 +181,11 @@ public class RequestMappingHandlerMapping extends RequestMappingInfoHandlerMappi
 	 */
 	@Override
 	protected RequestMappingInfo getMappingForMethod(Method method, Class<?> handlerType) {
+		//通过这一步通过RequestMapping 注解进行构造
 		RequestMappingInfo info = createRequestMappingInfo(method);
 		if (info != null) {
+			//如果查询到的话 那么这里还需要从类注解中查询 比如类中存在RequestMapping注解的话
+			//那么其中最后映射的时候 全路径需要加上这部分
 			RequestMappingInfo typeInfo = createRequestMappingInfo(handlerType);
 			if (typeInfo != null) {
 				info = typeInfo.combine(info);
@@ -199,6 +202,7 @@ public class RequestMappingHandlerMapping extends RequestMappingInfoHandlerMappi
 	 * @see #getCustomMethodCondition(Method)
 	 */
 	private RequestMappingInfo createRequestMappingInfo(AnnotatedElement element) {
+		//查询RequestMapping注解 通过注解的元数据进行构造RequestMappingInfo 其中包含了所有的配置  PATH method等等
 		RequestMapping requestMapping = AnnotatedElementUtils.findMergedAnnotation(element, RequestMapping.class);
 		RequestCondition<?> condition = (element instanceof Class<?> ?
 				getCustomTypeCondition((Class<?>) element) : getCustomMethodCondition((Method) element));
@@ -221,6 +225,8 @@ public class RequestMappingHandlerMapping extends RequestMappingInfoHandlerMappi
 	}
 
 	/**
+	 * 提供自定义方法级别的注解
+	 *
 	 * Provide a custom method-level request condition.
 	 * The custom {@link RequestCondition} can be of any type so long as the
 	 * same condition type is returned from all calls to this method in order
@@ -244,7 +250,9 @@ public class RequestMappingHandlerMapping extends RequestMappingInfoHandlerMappi
 	protected RequestMappingInfo createRequestMappingInfo(
 			RequestMapping requestMapping, RequestCondition<?> customCondition) {
 
+		//构建信息
 		return RequestMappingInfo
+				//构造path 这里是可以进行表达式的
 				.paths(resolveEmbeddedValuesInPatterns(requestMapping.path()))
 				.methods(requestMapping.method())
 				.params(requestMapping.params())

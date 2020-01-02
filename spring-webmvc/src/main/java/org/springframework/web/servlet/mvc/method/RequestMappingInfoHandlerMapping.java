@@ -72,6 +72,9 @@ public abstract class RequestMappingInfoHandlerMapping extends AbstractHandlerMe
 	}
 
 
+	/**
+	 * 注意这里 这里是构造函数 构造之后就会进行策略的初始化
+	 */
 	protected RequestMappingInfoHandlerMapping() {
 		setHandlerMethodMappingNamingStrategy(new RequestMappingInfoHandlerMethodMappingNamingStrategy());
 	}

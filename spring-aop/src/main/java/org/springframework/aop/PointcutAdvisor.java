@@ -17,6 +17,8 @@
 package org.springframework.aop;
 
 /**
+ * 通过切点方式定义的通知 都需要实现该接口
+ *
  * Superinterface for all Advisors that are driven by a pointcut.
  * This covers nearly all advisors except introduction advisors,
  * for which method-level matching doesn't apply.
@@ -27,6 +29,7 @@ public interface PointcutAdvisor extends Advisor {
 
 	/**
 	 * Get the Pointcut that drives this advisor.
+	 * 获取切点
 	 */
 	Pointcut getPointcut();
 

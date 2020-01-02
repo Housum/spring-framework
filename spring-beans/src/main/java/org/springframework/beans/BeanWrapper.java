@@ -19,6 +19,9 @@ package org.springframework.beans;
 import java.beans.PropertyDescriptor;
 
 /**
+ *
+ * 代表了JavaBeans，同时提供了很复杂的类型转换等功能
+ *
  * The central interface of Spring's low-level JavaBeans infrastructure.
  *
  * <p>Typically not used directly but rather implicitly via a

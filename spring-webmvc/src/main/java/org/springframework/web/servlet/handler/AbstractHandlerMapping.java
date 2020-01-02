@@ -244,7 +244,9 @@ public abstract class AbstractHandlerMapping extends WebApplicationObjectSupport
 	@Override
 	protected void initApplicationContext() throws BeansException {
 		extendInterceptors(this.interceptors);
+		//从容器中拿到所有的MappedInterceptor
 		detectMappedInterceptors(this.adaptedInterceptors);
+		//初始化interceptors
 		initInterceptors();
 	}
 
@@ -340,6 +342,8 @@ public abstract class AbstractHandlerMapping extends WebApplicationObjectSupport
 	}
 
 	/**
+	 *
+	 * 对于请求 获取对应的执行链 执行链中包含了处理器 以及前置处理和后置处理
 	 * Look up a handler for the given request, falling back to the default
 	 * handler if no specific one is found.
 	 * @param request current HTTP request
@@ -348,8 +352,11 @@ public abstract class AbstractHandlerMapping extends WebApplicationObjectSupport
 	 */
 	@Override
 	public final HandlerExecutionChain getHandler(HttpServletRequest request) throws Exception {
+
+		//这部分是最核心的东西
 		Object handler = getHandlerInternal(request);
 		if (handler == null) {
+			//如果没有获取到的话 那么获取默认的一个处理器
 			handler = getDefaultHandler();
 		}
 		if (handler == null) {
@@ -361,7 +368,9 @@ public abstract class AbstractHandlerMapping extends WebApplicationObjectSupport
 			handler = getApplicationContext().getBean(handlerName);
 		}
 
+		//处理器拿到了 这一笔是将拦截器加入到其中
 		HandlerExecutionChain executionChain = getHandlerExecutionChain(handler, request);
+		//CROS请求 https://www.ruanyifeng.com/blog/2016/04/cors.html
 		if (CorsUtils.isCorsRequest(request)) {
 			CorsConfiguration globalConfig = this.corsConfigSource.getCorsConfiguration(request);
 			CorsConfiguration handlerConfig = getCorsConfiguration(handler, request);
@@ -413,8 +422,12 @@ public abstract class AbstractHandlerMapping extends WebApplicationObjectSupport
 		HandlerExecutionChain chain = (handler instanceof HandlerExecutionChain ?
 				(HandlerExecutionChain) handler : new HandlerExecutionChain(handler));
 
+		//获取path 这部分需要考虑servlet mapping
 		String lookupPath = this.urlPathHelper.getLookupPathForRequest(request);
 		for (HandlerInterceptor interceptor : this.adaptedInterceptors) {
+
+			//如果是URL映射的情况 那么这部分是需要进行URL匹配的
+			//@see MappedInterceptor
 			if (interceptor instanceof MappedInterceptor) {
 				MappedInterceptor mappedInterceptor = (MappedInterceptor) interceptor;
 				if (mappedInterceptor.matches(lookupPath, this.pathMatcher)) {
@@ -422,6 +435,7 @@ public abstract class AbstractHandlerMapping extends WebApplicationObjectSupport
 				}
 			}
 			else {
+				//否则的话 这部分就直接进去 拦截所有的请求
 				chain.addInterceptor(interceptor);
 			}
 		}

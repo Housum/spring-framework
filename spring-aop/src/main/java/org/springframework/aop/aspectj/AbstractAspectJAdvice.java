@@ -49,6 +49,10 @@ import org.springframework.util.ReflectionUtils;
 import org.springframework.util.StringUtils;
 
 /**
+ *
+ *
+ * AOP的通知抽象类
+ *
  * Base class for AOP Alliance {@link org.aopalliance.aop.Advice} classes
  * wrapping an AspectJ aspect or an AspectJ-annotated advice method.
  *
@@ -649,6 +653,7 @@ public abstract class AbstractAspectJAdvice implements Advice, AspectJPrecedence
 	 * Get the current join point match at the join point we are being dispatched on.
 	 */
 	protected JoinPointMatch getJoinPointMatch() {
+		//org.springframework.aop.aspectj.autoproxy.AspectJAwareAdvisorAutoProxyCreator.extendAdvisors
 		MethodInvocation mi = ExposeInvocationInterceptor.currentInvocation();
 		if (!(mi instanceof ProxyMethodInvocation)) {
 			throw new IllegalStateException("MethodInvocation is not a Spring ProxyMethodInvocation: " + mi);

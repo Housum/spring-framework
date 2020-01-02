@@ -22,12 +22,18 @@ import java.util.List;
 /**
  * Factory interface for advisor chains.
  *
+ * 通知链
+ *
+ *
  * @author Rod Johnson
  * @author Juergen Hoeller
  */
 public interface AdvisorChainFactory {
 
 	/**
+	 *
+	 * 创建一个执行链
+	 *
 	 * Determine a list of {@link org.aopalliance.intercept.MethodInterceptor} objects
 	 * for the given advisor chain configuration.
 	 * @param config the AOP configuration in the form of an Advised object

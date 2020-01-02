@@ -21,6 +21,8 @@ import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.TransactionException;
 
 /**
+ * 提供事务回调
+ *
  * Extension of the {@link org.springframework.transaction.PlatformTransactionManager}
  * interface, exposing a method for executing a given callback within a transaction.
  *

@@ -27,6 +27,8 @@ import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.BeanDefinitionHolder;
 
 /**
+ * NamespaceHandler的支持类 该类定义了一套解析框架 采用了抽象工厂的高级用法
+ *
  * Support class for implementing custom {@link NamespaceHandler NamespaceHandlers}.
  * Parsing and decorating of individual {@link Node Nodes} is done via {@link BeanDefinitionParser}
  * and {@link BeanDefinitionDecorator} strategy interfaces, respectively.
@@ -44,6 +46,11 @@ import org.springframework.beans.factory.config.BeanDefinitionHolder;
 public abstract class NamespaceHandlerSupport implements NamespaceHandler {
 
 	/**
+	 * 因为在spring/handler 文件中定义了名称空间对于的NamespaceHandler
+	 * 但是命名空间中有很多的标签 所以每个标签都是通过BeanDefinitionParser进行操作的
+	 *
+	 * key是标签的名称 BeanDefinitionParser是解析该标签的
+	 *
 	 * Stores the {@link BeanDefinitionParser} implementations keyed by the
 	 * local name of the {@link Element Elements} they handle.
 	 */
@@ -51,6 +58,9 @@ public abstract class NamespaceHandlerSupport implements NamespaceHandler {
 			new HashMap<String, BeanDefinitionParser>();
 
 	/**
+	 *
+	 * 同理 BeanDefinitionDecorator 是解析标签中属性的
+	 *
 	 * Stores the {@link BeanDefinitionDecorator} implementations keyed by the
 	 * local name of the {@link Element Elements} they handle.
 	 */
@@ -58,6 +68,8 @@ public abstract class NamespaceHandlerSupport implements NamespaceHandler {
 			new HashMap<String, BeanDefinitionDecorator>();
 
 	/**
+	 * 同上 但是节点元素类型是Attr
+	 *
 	 * Stores the {@link BeanDefinitionDecorator} implementations keyed by the local
 	 * name of the {@link Attr Attrs} they handle.
 	 */

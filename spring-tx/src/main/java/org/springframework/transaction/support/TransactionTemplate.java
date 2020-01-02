@@ -29,6 +29,10 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.TransactionSystemException;
 
 /**
+ *
+ *
+ * 编程事务模版
+ *
  * Template class that simplifies programmatic transaction demarcation and
  * transaction exception handling.
  *

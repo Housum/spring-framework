@@ -26,6 +26,10 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.core.io.Resource;
 
 /**
+ * 实现了XML方式解析BeanDefinition,启动就是使用
+ * XmlBeanDefinitionReader的能力,传入的beanFactory由父类指定
+ *
+ *
  * Convenient base class for {@link org.springframework.context.ApplicationContext}
  * implementations, drawing configuration from XML documents containing bean definitions
  * understood by an {@link org.springframework.beans.factory.xml.XmlBeanDefinitionReader}.
@@ -44,6 +48,9 @@ import org.springframework.core.io.Resource;
  */
 public abstract class AbstractXmlApplicationContext extends AbstractRefreshableConfigApplicationContext {
 
+	/**
+	 * 是否校验
+	 */
 	private boolean validating = true;
 
 

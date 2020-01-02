@@ -33,6 +33,9 @@ import org.springframework.web.context.ServletConfigAware;
 import org.springframework.web.context.ServletContextAware;
 
 /**
+ *
+ * 提供web的能力
+ *
  * {@link org.springframework.context.support.AbstractRefreshableApplicationContext}
  * subclass which implements the
  * {@link org.springframework.web.context.ConfigurableWebApplicationContext}
@@ -157,6 +160,8 @@ public abstract class AbstractRefreshableWebApplicationContext extends AbstractR
 	 */
 	@Override
 	protected void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) {
+
+		//这里做了一些操作 将ServletContextAware和ServletConfigAware设置到实现了接口中 可以讲
 		beanFactory.addBeanPostProcessor(new ServletContextAwareProcessor(this.servletContext, this.servletConfig));
 		beanFactory.ignoreDependencyInterface(ServletContextAware.class);
 		beanFactory.ignoreDependencyInterface(ServletConfigAware.class);

@@ -16,6 +16,7 @@
 
 package org.springframework.transaction.config;
 
+import org.springframework.aop.framework.autoproxy.AbstractAutoProxyCreator;
 import org.w3c.dom.Element;
 
 import org.springframework.aop.config.AopNamespaceUtils;
@@ -31,6 +32,9 @@ import org.springframework.transaction.interceptor.BeanFactoryTransactionAttribu
 import org.springframework.transaction.interceptor.TransactionInterceptor;
 
 /**
+ *
+ * 启用声明式事务
+ *
  * {@link org.springframework.beans.factory.xml.BeanDefinitionParser
  * BeanDefinitionParser} implementation that allows users to easily configure
  * all the infrastructure beans required to enable annotation-driven transaction
@@ -59,6 +63,7 @@ class AnnotationDrivenBeanDefinitionParser implements BeanDefinitionParser {
 	public BeanDefinition parse(Element element, ParserContext parserContext) {
 		registerTransactionalEventListenerFactory(parserContext);
 		String mode = element.getAttribute("mode");
+		//采用的事务模式
 		if ("aspectj".equals(mode)) {
 			// mode="aspectj"
 			registerTransactionAspect(element, parserContext);
@@ -103,15 +108,18 @@ class AnnotationDrivenBeanDefinitionParser implements BeanDefinitionParser {
 		public static void configureAutoProxyCreator(Element element, ParserContext parserContext) {
 			AopNamespaceUtils.registerAutoProxyCreatorIfNecessary(parserContext, element);
 
+			//事务处理
 			String txAdvisorBeanName = TransactionManagementConfigUtils.TRANSACTION_ADVISOR_BEAN_NAME;
 			if (!parserContext.getRegistry().containsBeanDefinition(txAdvisorBeanName)) {
 				Object eleSource = parserContext.extractSource(element);
 
 				// Create the TransactionAttributeSource definition.
+				//该类主要工作是解析器 解析事务注解上面的属性 比如: 隔离级别 传播行为等等
 				RootBeanDefinition sourceDef = new RootBeanDefinition(
 						"org.springframework.transaction.annotation.AnnotationTransactionAttributeSource");
 				sourceDef.setSource(eleSource);
 				sourceDef.setRole(BeanDefinition.ROLE_INFRASTRUCTURE);
+				//将BeanDefinition进行注册
 				String sourceName = parserContext.getReaderContext().registerWithGeneratedName(sourceDef);
 
 				// Create the TransactionInterceptor definition.
@@ -122,11 +130,25 @@ class AnnotationDrivenBeanDefinitionParser implements BeanDefinitionParser {
 				interceptorDef.getPropertyValues().add("transactionAttributeSource", new RuntimeBeanReference(sourceName));
 				String interceptorName = parserContext.getReaderContext().registerWithGeneratedName(interceptorDef);
 
+				//
 				// Create the TransactionAttributeSourceAdvisor definition.
+				/**
+				 * 这里是添加一个PointcutAdvisor 见AOP解析那块内容 这个PointcutAdvisor会对所有的Bean进行匹配
+				 * 如果能给使用的话 那么将会返回一个Advice通过,这个就相当于拦截器(通过JDK Proxy 或者 CGLIB方式代理)
+				 * 然后这里的拦截器其实就是TransactionInterceptor. 所以事务的总的一个过程就是 首先在AbstractAutoProxyCreator这个BeanProcessor
+				 * 中进行获取到BeanFactoryTransactionAttributeSourceAdvisor这个PointcutAdvisor,然后进行匹配当前是否需要增加事务处理
+				 * 如果需要的话 那么将TransactionInterceptor织入到目标Bean中
+				 *
+				 * @see org.springframework.aop.config.AopConfigUtils
+				 * @see org.springframework.aop.config.AopConfigUtils#registerAutoProxyCreatorIfNecessary(org.springframework.beans.factory.support.BeanDefinitionRegistry, java.lang.Object)
+				 * @see  AbstractAutoProxyCreator
+				 */
 				RootBeanDefinition advisorDef = new RootBeanDefinition(BeanFactoryTransactionAttributeSourceAdvisor.class);
 				advisorDef.setSource(eleSource);
 				advisorDef.setRole(BeanDefinition.ROLE_INFRASTRUCTURE);
+				//这里也很关键 主要是为了解析事务属性
 				advisorDef.getPropertyValues().add("transactionAttributeSource", new RuntimeBeanReference(sourceName));
+				//这里很重要 这里注入Advice
 				advisorDef.getPropertyValues().add("adviceBeanName", interceptorName);
 				if (element.hasAttribute("order")) {
 					advisorDef.getPropertyValues().add("order", element.getAttribute("order"));

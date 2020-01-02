@@ -20,6 +20,7 @@ import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.beans.factory.config.Scope;
 
 /**
+ * Session级别的scope
  * Abstract {@link Scope} implementation that reads from a particular scope
  * in the current thread-bound {@link RequestAttributes} object.
  *

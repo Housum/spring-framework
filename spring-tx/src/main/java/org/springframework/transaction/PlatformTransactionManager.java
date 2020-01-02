@@ -42,8 +42,10 @@ package org.springframework.transaction;
  * @see org.springframework.transaction.interceptor.TransactionProxyFactoryBean
  */
 public interface PlatformTransactionManager {
-
 	/**
+	 * 返回当前的事务或者创建一个事务 具体需要依据TransactionDefinition,其中也有一个
+	 * 属性是不能够对已经存在的事务产生影响,有些参数是只针对新创建事务的时候使用
+	 *
 	 * Return a currently active transaction or create a new one, according to
 	 * the specified propagation behavior.
 	 * <p>Note that parameters like isolation level or timeout will only be applied
@@ -68,7 +70,10 @@ public interface PlatformTransactionManager {
 	 */
 	TransactionStatus getTransaction(TransactionDefinition definition) throws TransactionException;
 
+
 	/**
+	 * 提交事务
+	 *
 	 * Commit the given transaction, with regard to its status. If the transaction
 	 * has been marked rollback-only programmatically, perform a rollback.
 	 * <p>If the transaction wasn't a new one, omit the commit for proper
@@ -98,6 +103,9 @@ public interface PlatformTransactionManager {
 	void commit(TransactionStatus status) throws TransactionException;
 
 	/**
+	 *
+	 * 回滚
+	 *
 	 * Perform a rollback of the given transaction.
 	 * <p>If the transaction wasn't a new one, just set it rollback-only for proper
 	 * participation in the surrounding transaction. If a previous transaction

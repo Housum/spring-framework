@@ -34,6 +34,8 @@ import org.springframework.util.ClassUtils;
 import org.springframework.util.ObjectUtils;
 
 /**
+ * 转换过程中  类型描述
+ *
  * Context about a type to convert from or to.
  *
  * @author Keith Donald

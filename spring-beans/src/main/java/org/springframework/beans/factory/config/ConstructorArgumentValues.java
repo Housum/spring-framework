@@ -31,6 +31,8 @@ import org.springframework.util.ClassUtils;
 import org.springframework.util.ObjectUtils;
 
 /**
+ * 保存构造函数配置的值
+ *
  * Holder for constructor argument values, typically as part of a bean definition.
  *
  * <p>Supports values for a specific index in the constructor argument list
@@ -42,8 +44,13 @@ import org.springframework.util.ObjectUtils;
  */
 public class ConstructorArgumentValues {
 
+	/**
+	 * 对于有index指定的参数
+	 */
 	private final Map<Integer, ValueHolder> indexedArgumentValues = new LinkedHashMap<Integer, ValueHolder>(0);
-
+	/**
+	 * 对于木有的 但是是有先后顺序
+	 */
 	private final List<ValueHolder> genericArgumentValues = new LinkedList<ValueHolder>();
 
 
@@ -162,11 +169,9 @@ public class ConstructorArgumentValues {
 	public ValueHolder getIndexedArgumentValue(int index, Class<?> requiredType, String requiredName) {
 		Assert.isTrue(index >= 0, "Index must not be negative");
 		ValueHolder valueHolder = this.indexedArgumentValues.get(index);
-		if (valueHolder != null &&
-				(valueHolder.getType() == null ||
-						(requiredType != null && ClassUtils.matchesTypeName(requiredType, valueHolder.getType()))) &&
-				(valueHolder.getName() == null || "".equals(requiredName) ||
-						(requiredName != null && requiredName.equals(valueHolder.getName())))) {
+		if (valueHolder != null
+				&& (valueHolder.getType() == null || (requiredType != null && ClassUtils.matchesTypeName(requiredType, valueHolder.getType())))
+				&& (valueHolder.getName() == null || "".equals(requiredName) || (requiredName != null && requiredName.equals(valueHolder.getName())))) {
 			return valueHolder;
 		}
 		return null;

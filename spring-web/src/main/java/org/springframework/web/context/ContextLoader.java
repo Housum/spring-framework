@@ -46,6 +46,9 @@ import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 
 /**
+ *
+ * SpringMVC加载容器 从这里创建ApplicationContext
+ *
  * Performs the actual initialization work for the root application context.
  * Called by {@link ContextLoaderListener}.
  *
@@ -293,6 +296,8 @@ public class ContextLoader {
 	 * @see #CONFIG_LOCATION_PARAM
 	 */
 	public WebApplicationContext initWebApplicationContext(ServletContext servletContext) {
+
+		//为了堵重 所以这里在创建成功之后将会把容器放入到其中
 		if (servletContext.getAttribute(WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE) != null) {
 			throw new IllegalStateException(
 					"Cannot initialize context because there is already a root application context present - " +
@@ -310,10 +315,12 @@ public class ContextLoader {
 			// Store context in local instance variable, to guarantee that
 			// it is available on ServletContext shutdown.
 			if (this.context == null) {
+				//创建操作
 				this.context = createWebApplicationContext(servletContext);
 			}
 			if (this.context instanceof ConfigurableWebApplicationContext) {
 				ConfigurableWebApplicationContext cwac = (ConfigurableWebApplicationContext) this.context;
+				//如果未存活
 				if (!cwac.isActive()) {
 					// The context has not yet been refreshed -> provide services such as
 					// setting the parent context, setting the application context id, etc
@@ -323,9 +330,12 @@ public class ContextLoader {
 						ApplicationContext parent = loadParentContext(servletContext);
 						cwac.setParent(parent);
 					}
+					//启动 这里就将调用ApplicationContext的加载全部流程了，加载配置，加载插件等等
 					configureAndRefreshWebApplicationContext(cwac, servletContext);
 				}
 			}
+
+			//启动完成之后 在这里将容器放入到servletContext中去
 			servletContext.setAttribute(WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE, this.context);
 
 			ClassLoader ccl = Thread.currentThread().getContextClassLoader();
@@ -377,6 +387,7 @@ public class ContextLoader {
 			throw new ApplicationContextException("Custom context class [" + contextClass.getName() +
 					"] is not of type [" + ConfigurableWebApplicationContext.class.getName() + "]");
 		}
+		//进行初始化操作
 		return (ConfigurableWebApplicationContext) BeanUtils.instantiateClass(contextClass);
 	}
 
@@ -389,6 +400,7 @@ public class ContextLoader {
 	 * @see org.springframework.web.context.support.XmlWebApplicationContext
 	 */
 	protected Class<?> determineContextClass(ServletContext servletContext) {
+		//可以通过contextClass执行加载的类名
 		String contextClassName = servletContext.getInitParameter(CONTEXT_CLASS_PARAM);
 		if (contextClassName != null) {
 			try {
@@ -400,6 +412,7 @@ public class ContextLoader {
 			}
 		}
 		else {
+			//否则的话 那么从默认的策略中进行加载操作
 			contextClassName = defaultStrategies.getProperty(WebApplicationContext.class.getName());
 			try {
 				return ClassUtils.forName(contextClassName, ContextLoader.class.getClassLoader());
@@ -427,6 +440,7 @@ public class ContextLoader {
 		}
 
 		wac.setServletContext(sc);
+		//这个很重要 这个是后面进行配置加载使用的
 		String configLocationParam = sc.getInitParameter(CONFIG_LOCATION_PARAM);
 		if (configLocationParam != null) {
 			wac.setConfigLocation(configLocationParam);
@@ -440,7 +454,9 @@ public class ContextLoader {
 			((ConfigurableWebEnvironment) env).initPropertySources(sc, null);
 		}
 
+		//做一些定制化的操作 比如加一些东西到容器中去
 		customizeContext(sc, wac);
+		//开始启动
 		wac.refresh();
 	}
 
@@ -462,6 +478,9 @@ public class ContextLoader {
 	 * @see ApplicationContextInitializer#initialize(ConfigurableApplicationContext)
 	 */
 	protected void customizeContext(ServletContext sc, ConfigurableWebApplicationContext wac) {
+
+
+		//解析ApplicationContextInitializer 该类使用方式就是在初始化之后会被回调
 		List<Class<ApplicationContextInitializer<ConfigurableApplicationContext>>> initializerClasses =
 				determineContextInitializerClasses(sc);
 
@@ -479,6 +498,7 @@ public class ContextLoader {
 		}
 
 		AnnotationAwareOrderComparator.sort(this.contextInitializers);
+		//注意 这里是在初始化之前进行回调的 回调之后再调用refresh方法 启动容器
 		for (ApplicationContextInitializer<ConfigurableApplicationContext> initializer : this.contextInitializers) {
 			initializer.initialize(wac);
 		}
@@ -493,9 +513,12 @@ public class ContextLoader {
 	protected List<Class<ApplicationContextInitializer<ConfigurableApplicationContext>>>
 			determineContextInitializerClasses(ServletContext servletContext) {
 
+
+		//从两个参数重获取ApplicationContextInitializer类 从
 		List<Class<ApplicationContextInitializer<ConfigurableApplicationContext>>> classes =
 				new ArrayList<Class<ApplicationContextInitializer<ConfigurableApplicationContext>>>();
 
+		//globalInitializerClasses
 		String globalClassNames = servletContext.getInitParameter(GLOBAL_INITIALIZER_CLASSES_PARAM);
 		if (globalClassNames != null) {
 			for (String className : StringUtils.tokenizeToStringArray(globalClassNames, INIT_PARAM_DELIMITERS)) {
@@ -503,6 +526,7 @@ public class ContextLoader {
 			}
 		}
 
+		//contextInitializerClasses
 		String localClassNames = servletContext.getInitParameter(CONTEXT_INITIALIZER_CLASSES_PARAM);
 		if (localClassNames != null) {
 			for (String className : StringUtils.tokenizeToStringArray(localClassNames, INIT_PARAM_DELIMITERS)) {
@@ -552,6 +576,7 @@ public class ContextLoader {
 
 		if (parentContextKey != null) {
 			// locatorFactorySelector may be null, indicating the default "classpath*:beanRefContext.xml"
+			//定位器
 			BeanFactoryLocator locator = ContextSingletonBeanFactoryLocator.getInstance(locatorFactorySelector);
 			Log logger = LogFactory.getLog(ContextLoader.class);
 			if (logger.isDebugEnabled()) {

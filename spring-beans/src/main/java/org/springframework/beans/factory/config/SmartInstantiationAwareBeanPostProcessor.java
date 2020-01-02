@@ -37,6 +37,8 @@ import org.springframework.beans.BeansException;
 public interface SmartInstantiationAwareBeanPostProcessor extends InstantiationAwareBeanPostProcessor {
 
 	/**
+	 * 判断类型
+	 *
 	 * Predict the type of the bean to be eventually returned from this
 	 * processor's {@link #postProcessBeforeInstantiation} callback.
 	 * @param beanClass the raw class of the bean
@@ -47,6 +49,8 @@ public interface SmartInstantiationAwareBeanPostProcessor extends InstantiationA
 	Class<?> predictBeanType(Class<?> beanClass, String beanName) throws BeansException;
 
 	/**
+	 * 查询构造函数
+	 *
 	 * Determine the candidate constructors to use for the given bean.
 	 * @param beanClass the raw class of the bean (never {@code null})
 	 * @param beanName the name of the bean
@@ -56,6 +60,8 @@ public interface SmartInstantiationAwareBeanPostProcessor extends InstantiationA
 	Constructor<?>[] determineCandidateConstructors(Class<?> beanClass, String beanName) throws BeansException;
 
 	/**
+	 * 获取
+	 *
 	 * Obtain a reference for early access to the specified bean,
 	 * typically for the purpose of resolving a circular reference.
 	 * <p>This callback gives post-processors a chance to expose a wrapper

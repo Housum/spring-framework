@@ -125,6 +125,7 @@ public abstract class HttpServletBean extends HttpServlet
 			ResourceLoader resourceLoader = new ServletContextResourceLoader(getServletContext());
 			bw.registerCustomEditor(Resource.class, new ResourceEditor(resourceLoader, getEnvironment()));
 			initBeanWrapper(bw);
+			//这里其实是利用了BeanWrapper的能力 进行校验
 			bw.setPropertyValues(pvs, true);
 		}
 		catch (BeansException ex) {

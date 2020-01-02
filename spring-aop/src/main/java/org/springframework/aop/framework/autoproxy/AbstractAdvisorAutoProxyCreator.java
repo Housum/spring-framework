@@ -66,6 +66,7 @@ public abstract class AbstractAdvisorAutoProxyCreator extends AbstractAutoProxyC
 
 	@Override
 	protected Object[] getAdvicesAndAdvisorsForBean(Class<?> beanClass, String beanName, TargetSource targetSource) {
+		//通知容器 其中保存的就是通知 如果没有拦截点的话 那么是不会生成代理的 所以容器里面的对象还是原先的对象
 		List<Advisor> advisors = findEligibleAdvisors(beanClass, beanName);
 		if (advisors.isEmpty()) {
 			return DO_NOT_PROXY;
@@ -74,6 +75,8 @@ public abstract class AbstractAdvisorAutoProxyCreator extends AbstractAutoProxyC
 	}
 
 	/**
+	 * 查询所有的通知接口
+	 *
 	 * Find all eligible Advisors for auto-proxying this class.
 	 * @param beanClass the clazz to find advisors for
 	 * @param beanName the name of the currently proxied bean
@@ -84,20 +87,30 @@ public abstract class AbstractAdvisorAutoProxyCreator extends AbstractAutoProxyC
 	 * @see #extendAdvisors
 	 */
 	protected List<Advisor> findEligibleAdvisors(Class<?> beanClass, String beanName) {
+		//
+		//这里分两部分 一部分是实现了接口,这一步其实就是从BeanFactory中去查询所有的Advisor类(其中封装了通知)
+		//一部分是使用注解的,这一步就是查询注解存在@Aspect的所有类
 		List<Advisor> candidateAdvisors = findCandidateAdvisors();
+		//第一步拿到的是所有的通知点 这一步就是根据切点匹配当前的Bean,看该类是否可以织入通知
+		//匹配的方式就是查看类或者方法能不能匹配上切点表达式
 		List<Advisor> eligibleAdvisors = findAdvisorsThatCanApply(candidateAdvisors, beanClass, beanName);
+		//这里将当前执行的MethodInvocation给进行暴露了
 		extendAdvisors(eligibleAdvisors);
 		if (!eligibleAdvisors.isEmpty()) {
+			//进行排序
 			eligibleAdvisors = sortAdvisors(eligibleAdvisors);
 		}
 		return eligibleAdvisors;
 	}
 
 	/**
+	 * 子类实现自己的
+	 *
 	 * Find all candidate Advisors to use in auto-proxying.
 	 * @return the List of candidate Advisors
 	 */
 	protected List<Advisor> findCandidateAdvisors() {
+		//这部分是使用接口的方式
 		return this.advisorRetrievalHelper.findAdvisorBeans();
 	}
 

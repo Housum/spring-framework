@@ -77,6 +77,7 @@ public class HandlerMethod {
 		this.beanType = ClassUtils.getUserClass(bean);
 		this.method = method;
 		this.bridgedMethod = BridgeMethodResolver.findBridgedMethod(method);
+		//解析处理器方法上面的参数
 		this.parameters = initMethodParameters();
 		this.resolvedFromHandlerMethod = null;
 	}

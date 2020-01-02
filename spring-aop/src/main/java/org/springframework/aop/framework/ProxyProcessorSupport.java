@@ -59,6 +59,7 @@ public class ProxyProcessorSupport extends ProxyConfig implements Ordered, BeanC
 
 	@Override
 	public int getOrder() {
+		//对于实现了order的来说 是最低级别实现的
 		return this.order;
 	}
 
@@ -100,6 +101,7 @@ public class ProxyProcessorSupport extends ProxyConfig implements Ordered, BeanC
 		Class<?>[] targetInterfaces = ClassUtils.getAllInterfacesForClass(beanClass, getProxyClassLoader());
 		boolean hasReasonableProxyInterface = false;
 		for (Class<?> ifc : targetInterfaces) {
+			//过滤掉非可通的接口 其他的接口都需要作为代理的接口
 			if (!isConfigurationCallbackInterface(ifc) && !isInternalLanguageInterface(ifc) &&
 					ifc.getMethods().length > 0) {
 				hasReasonableProxyInterface = true;
@@ -109,6 +111,7 @@ public class ProxyProcessorSupport extends ProxyConfig implements Ordered, BeanC
 		if (hasReasonableProxyInterface) {
 			// Must allow for introductions; can't just set interfaces to the target's interfaces only.
 			for (Class<?> ifc : targetInterfaces) {
+				//如果存在接口的话 那么添加上
 				proxyFactory.addInterface(ifc);
 			}
 		}

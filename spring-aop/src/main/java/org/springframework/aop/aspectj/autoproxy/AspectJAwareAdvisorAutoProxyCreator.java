@@ -34,6 +34,7 @@ import org.springframework.core.Ordered;
 import org.springframework.util.ClassUtils;
 
 /**
+ * 提供了基本的构造通知点能力的类
  * {@link org.springframework.aop.framework.autoproxy.AbstractAdvisorAutoProxyCreator}
  * subclass that exposes AspectJ's invocation context and understands AspectJ's rules
  * for advice precedence when multiple pieces of advice come from the same aspect.
@@ -94,6 +95,7 @@ public class AspectJAwareAdvisorAutoProxyCreator extends AbstractAdvisorAutoProx
 	 */
 	@Override
 	protected void extendAdvisors(List<Advisor> candidateAdvisors) {
+		//这里将ExposeInvocationInterceptor增加到其中 其中保留了当前的MethodInvocation 这样在之后的调用中可以直接的使用
 		AspectJProxyUtils.makeAdvisorChainAspectJCapableIfNecessary(candidateAdvisors);
 	}
 

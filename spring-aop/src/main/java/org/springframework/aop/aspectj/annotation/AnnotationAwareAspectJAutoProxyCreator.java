@@ -27,6 +27,14 @@ import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.util.Assert;
 
 /**
+ *
+ * AOP框架实现的基石
+ * 实现了当时就是实现了BeanProcessor,在调用之后进行加强操作
+ *
+ * 基础概念:
+ *
+ * https://www.iteye.com/blog/jinnianshilongnian-1418596
+ *
  * {@link AspectJAwareAdvisorAutoProxyCreator} subclass that processes all AspectJ
  * annotation aspects in the current application context, as well as Spring Advisors.
  *
@@ -48,8 +56,13 @@ import org.springframework.util.Assert;
 @SuppressWarnings("serial")
 public class AnnotationAwareAspectJAutoProxyCreator extends AspectJAwareAdvisorAutoProxyCreator {
 
+	//可以在配置中进行配置
+	//org.springframework.aop.config.AspectJAutoProxyBeanDefinitionParser.extendBeanDefinition
 	private List<Pattern> includePatterns;
 
+	/**
+	 * AspectJ工厂
+	 */
 	private AspectJAdvisorFactory aspectJAdvisorFactory = new ReflectiveAspectJAdvisorFactory();
 
 	private BeanFactoryAspectJAdvisorsBuilder aspectJAdvisorsBuilder;
@@ -74,8 +87,7 @@ public class AnnotationAwareAspectJAutoProxyCreator extends AspectJAwareAdvisorA
 	@Override
 	protected void initBeanFactory(ConfigurableListableBeanFactory beanFactory) {
 		super.initBeanFactory(beanFactory);
-		this.aspectJAdvisorsBuilder =
-				new BeanFactoryAspectJAdvisorsBuilderAdapter(beanFactory, this.aspectJAdvisorFactory);
+		this.aspectJAdvisorsBuilder = new BeanFactoryAspectJAdvisorsBuilderAdapter(beanFactory, this.aspectJAdvisorFactory);
 	}
 
 

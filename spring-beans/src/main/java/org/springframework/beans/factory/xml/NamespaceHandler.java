@@ -23,6 +23,9 @@ import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.BeanDefinitionHolder;
 
 /**
+ * 1.对xml命名空间进行解析 主要的工作就是将XML定义节点解析成一个BeanDefinition返回
+ * 2.对存在配置进行装饰，在Xml节点的attr节点进行自定义的配置
+ *
  * Base interface used by the {@link DefaultBeanDefinitionDocumentReader}
  * for handling custom namespaces in a Spring XML configuration file.
  *
@@ -55,6 +58,8 @@ public interface NamespaceHandler {
 	void init();
 
 	/**
+	 * 对整个标签进行解析
+	 *
 	 * Parse the specified {@link Element} and register any resulting
 	 * {@link BeanDefinition BeanDefinitions} with the
 	 * {@link org.springframework.beans.factory.support.BeanDefinitionRegistry}
@@ -71,6 +76,8 @@ public interface NamespaceHandler {
 	BeanDefinition parse(Element element, ParserContext parserContext);
 
 	/**
+	 * 对标签中的元素进行解析 进而起到装饰的作用
+	 *
 	 * Parse the specified {@link Node} and decorate the supplied
 	 * {@link BeanDefinitionHolder}, returning the decorated definition.
 	 * <p>The {@link Node} may be either an {@link org.w3c.dom.Attr} or an

@@ -36,6 +36,9 @@ import org.springframework.util.ClassUtils;
 import org.springframework.util.ObjectUtils;
 
 /**
+ *
+ * 提供了ApplicationEventMulticaster注册的功能 采用SET的方式保存
+ *
  * Abstract implementation of the {@link ApplicationEventMulticaster} interface,
  * providing the basic listener registration facility.
  *
@@ -83,6 +86,7 @@ public abstract class AbstractApplicationEventMulticaster
 			if (this.beanClassLoader == null) {
 				this.beanClassLoader = cbf.getBeanClassLoader();
 			}
+			//遍历单例互斥体 在单例所有的操作都需要持有该锁
 			this.retrievalMutex = cbf.getSingletonMutex();
 		}
 	}
@@ -166,6 +170,7 @@ public abstract class AbstractApplicationEventMulticaster
 		ListenerCacheKey cacheKey = new ListenerCacheKey(eventType, sourceType);
 
 		// Quick check for existing entry on ConcurrentHashMap...
+		//看缓存中是否存在
 		ListenerRetriever retriever = this.retrieverCache.get(cacheKey);
 		if (retriever != null) {
 			return retriever.getApplicationListeners();
@@ -211,13 +216,16 @@ public abstract class AbstractApplicationEventMulticaster
 			listenerBeans = new LinkedHashSet<String>(this.defaultRetriever.applicationListenerBeans);
 		}
 		for (ApplicationListener<?> listener : listeners) {
+			//这里是查询是否监听的事件命中监听器
 			if (supportsEvent(listener, eventType, sourceType)) {
 				if (retriever != null) {
 					retriever.applicationListeners.add(listener);
 				}
+				//加载其中
 				allListeners.add(listener);
 			}
 		}
+		//这一步其实也是差不多的 只是需要根据Bean的名称查询出Bean
 		if (!listenerBeans.isEmpty()) {
 			BeanFactory beanFactory = getBeanFactory();
 			for (String listenerBeanName : listenerBeans) {
@@ -332,14 +340,21 @@ public abstract class AbstractApplicationEventMulticaster
 
 
 	/**
+	 *
+	 * 封装了遍历监听器的逻辑
+	 *
 	 * Helper class that encapsulates a specific set of target listeners,
 	 * allowing for efficient retrieval of pre-filtered listeners.
 	 * <p>An instance of this helper gets cached per event type and source type.
 	 */
 	private class ListenerRetriever {
-
+		/**
+		 * Bean实例
+		 */
 		public final Set<ApplicationListener<?>> applicationListeners;
-
+		/**
+		 * Bean的名称
+		 */
 		public final Set<String> applicationListenerBeans;
 
 		private final boolean preFiltered;
@@ -370,6 +385,7 @@ public abstract class AbstractApplicationEventMulticaster
 					}
 				}
 			}
+			//按照Order注解指定的顺序排序
 			AnnotationAwareOrderComparator.sort(allListeners);
 			return allListeners;
 		}

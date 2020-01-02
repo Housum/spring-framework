@@ -20,6 +20,8 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 
 /**
+ * 获取参数名称
+ *
  * Interface to discover parameter names for methods and constructors.
  *
  * <p>Parameter name discovery is not always possible, but various strategies are
@@ -34,6 +36,8 @@ import java.lang.reflect.Method;
 public interface ParameterNameDiscoverer {
 
 	/**
+	 * 获取方法的参数名称 是一个数组 比如第一参数：name,第二个参数：age
+	 *
 	 * Return parameter names for this method,
 	 * or {@code null} if they cannot be determined.
 	 * @param method method to find parameter names for

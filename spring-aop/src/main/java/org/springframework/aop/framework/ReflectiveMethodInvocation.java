@@ -26,6 +26,11 @@ import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
 
 import org.springframework.aop.ProxyMethodInvocation;
+import org.springframework.aop.aspectj.*;
+import org.springframework.aop.framework.adapter.AfterReturningAdviceInterceptor;
+import org.springframework.aop.framework.adapter.DefaultAdvisorAdapterRegistry;
+import org.springframework.aop.framework.adapter.MethodBeforeAdviceInterceptor;
+import org.springframework.aop.framework.adapter.ThrowsAdviceInterceptor;
 import org.springframework.aop.support.AopUtils;
 import org.springframework.core.BridgeMethodResolver;
 
@@ -154,11 +159,11 @@ public class ReflectiveMethodInvocation implements ProxyMethodInvocation, Clonea
 	public Object proceed() throws Throwable {
 		//	We start with an index of -1 and increment early.
 		if (this.currentInterceptorIndex == this.interceptorsAndDynamicMethodMatchers.size() - 1) {
+			//如果执行完拦截链了 那么这里执行目标方法了
 			return invokeJoinpoint();
 		}
 
-		Object interceptorOrInterceptionAdvice =
-				this.interceptorsAndDynamicMethodMatchers.get(++this.currentInterceptorIndex);
+		Object interceptorOrInterceptionAdvice = this.interceptorsAndDynamicMethodMatchers.get(++this.currentInterceptorIndex);
 		if (interceptorOrInterceptionAdvice instanceof InterceptorAndDynamicMethodMatcher) {
 			// Evaluate dynamic method matcher here: static part will already have
 			// been evaluated and found to match.
@@ -174,6 +179,21 @@ public class ReflectiveMethodInvocation implements ProxyMethodInvocation, Clonea
 			}
 		}
 		else {
+			//这里开始执行链 在链中执行之后都会执行MethodInvocation.proceed 让事件之后传播下去
+			/**
+			 * @see org.springframework.aop.aspectj.annotation.ReflectiveAspectJAdvisorFactory#getAdvice
+			 * @see DefaultAdvisorAdapterRegistry
+			 *
+			 * @see AspectJMethodBeforeAdvice
+			 * @see AspectJAfterAdvice
+			 * @see AspectJAfterReturningAdvice
+			 * @see AspectJAfterThrowingAdvice
+			 * @see AspectJAroundAdvice
+			 *
+			 * @see MethodBeforeAdviceInterceptor
+			 * @see AfterReturningAdviceInterceptor
+			 * @see ThrowsAdviceInterceptor
+			 */
 			// It's an interceptor, so we just invoke it: The pointcut will have
 			// been evaluated statically before this object was constructed.
 			return ((MethodInterceptor) interceptorOrInterceptionAdvice).invoke(this);

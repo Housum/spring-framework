@@ -17,6 +17,8 @@
 package org.springframework.aop.framework;
 
 /**
+ * AOP工厂 主要的工作就是创建AOP实例
+ *
  * Interface to be implemented by factories that are able to create
  * AOP proxies based on {@link AdvisedSupport} configuration objects.
  *

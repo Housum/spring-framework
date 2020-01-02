@@ -23,6 +23,9 @@ import org.springframework.beans.TypeConverter;
 import org.springframework.beans.factory.BeanFactory;
 
 /**
+ *
+ * 具有自动注入的能力
+ *
  * Extension of the {@link org.springframework.beans.factory.BeanFactory}
  * interface to be implemented by bean factories that are capable of
  * autowiring, provided that they want to expose this functionality for
@@ -58,6 +61,10 @@ import org.springframework.beans.factory.BeanFactory;
  */
 public interface AutowireCapableBeanFactory extends BeanFactory {
 
+	/*
+	 * 以下是几种自动注入的方式
+	 */
+
 	/**
 	 * Constant that indicates no externally defined autowiring. Note that
 	 * BeanFactoryAware etc and annotation-driven injection will still be applied.
@@ -68,6 +75,8 @@ public interface AutowireCapableBeanFactory extends BeanFactory {
 	int AUTOWIRE_NO = 0;
 
 	/**
+	 * 通过名称自动注入
+	 *
 	 * Constant that indicates autowiring bean properties by name
 	 * (applying to all bean property setters).
 	 * @see #createBean
@@ -77,6 +86,8 @@ public interface AutowireCapableBeanFactory extends BeanFactory {
 	int AUTOWIRE_BY_NAME = 1;
 
 	/**
+	 * 通过类型进行注册
+	 *
 	 * Constant that indicates autowiring bean properties by type
 	 * (applying to all bean property setters).
 	 * @see #createBean
@@ -110,6 +121,8 @@ public interface AutowireCapableBeanFactory extends BeanFactory {
 	//-------------------------------------------------------------------------
 
 	/**
+	 * 创建一个新的类  对于类初始化的所有操作都会经历一边
+	 *
 	 * Fully create a new bean instance of the given class.
 	 * <p>Performs full initialization of the bean, including all applicable
 	 * {@link BeanPostProcessor BeanPostProcessors}.
@@ -124,6 +137,8 @@ public interface AutowireCapableBeanFactory extends BeanFactory {
 	<T> T createBean(Class<T> beanClass) throws BeansException;
 
 	/**
+	 * 使用该方法会重新的调用后置处理器 这个主要是为了重新的设置注解
+	 *
 	 * Populate the given bean instance through applying after-instantiation callbacks
 	 * and bean property post-processing (e.g. for annotation-driven injection).
 	 * <p>Note: This is essentially intended for (re-)populating annotated fields and
@@ -155,6 +170,8 @@ public interface AutowireCapableBeanFactory extends BeanFactory {
 	Object configureBean(Object existingBean, String beanName) throws BeansException;
 
 	/**
+	 * 解析依赖
+	 *
 	 * Resolve the specified dependency against the beans defined in this factory.
 	 * @param descriptor the descriptor for the dependency
 	 * @param beanName the name of the bean which declares the present dependency
@@ -165,10 +182,12 @@ public interface AutowireCapableBeanFactory extends BeanFactory {
 
 
 	//-------------------------------------------------------------------------
-	// Specialized methods for fine-grained control over the bean lifecycle
+	// Specialized methods for fine-grained control over the bean lifecycle 细粒度空间bean的生命周期
 	//-------------------------------------------------------------------------
 
 	/**
+	 * 根据策略进行初始化类
+	 *
 	 * Fully create a new bean instance of the given class with the specified
 	 * autowire strategy. All constants defined in this interface are supported here.
 	 * <p>Performs full initialization of the bean, including all applicable
@@ -277,6 +296,8 @@ public interface AutowireCapableBeanFactory extends BeanFactory {
 	Object initializeBean(Object existingBean, String beanName) throws BeansException;
 
 	/**
+	 * 对所有的类使用BeanPostProcessor的applyBeanPostProcessorsBeforeInitialization方法
+	 *
 	 * Apply {@link BeanPostProcessor BeanPostProcessors} to the given existing bean
 	 * instance, invoking their {@code postProcessBeforeInitialization} methods.
 	 * The returned bean instance may be a wrapper around the original.
@@ -313,6 +334,8 @@ public interface AutowireCapableBeanFactory extends BeanFactory {
 	void destroyBean(Object existingBean);
 
 	/**
+	 * 解析依赖  autowiredBeanNames将会保存被注入的Bean名称
+	 *
 	 * Resolve the specified dependency against the beans defined in this factory.
 	 * @param descriptor the descriptor for the dependency
 	 * @param beanName the name of the bean which declares the present dependency

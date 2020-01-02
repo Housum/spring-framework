@@ -21,6 +21,9 @@ import org.w3c.dom.Element;
 import org.springframework.beans.factory.config.BeanDefinition;
 
 /**
+ * BeanDefinition解析器
+ *
+ *
  * Interface used by the {@link DefaultBeanDefinitionDocumentReader} to handle custom,
  * top-level (directly under {@code <beans/>}) tags.
  *
@@ -38,6 +41,8 @@ import org.springframework.beans.factory.config.BeanDefinition;
 public interface BeanDefinitionParser {
 
 	/**
+	 * 解析一个节点 返回一个定义
+	 *
 	 * Parse the specified {@link Element} and register the resulting
 	 * {@link BeanDefinition BeanDefinition(s)} with the
 	 * {@link org.springframework.beans.factory.xml.ParserContext#getRegistry() BeanDefinitionRegistry}

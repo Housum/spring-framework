@@ -20,6 +20,8 @@ import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.context.request.WebRequest;
 
 /**
+ * 初始化WebDataBinder
+ *
  * Callback interface for initializing a {@link org.springframework.web.bind.WebDataBinder}
  * for performing data binding in the context of a specific web request.
  *

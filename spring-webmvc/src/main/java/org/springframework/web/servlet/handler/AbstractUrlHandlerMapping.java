@@ -164,6 +164,7 @@ public abstract class AbstractUrlHandlerMapping extends AbstractHandlerMapping {
 		Object handler = this.handlerMap.get(urlPath);
 		if (handler != null) {
 			// Bean name or resolved handler?
+			//如果是名称的话 那么并没有解析
 			if (handler instanceof String) {
 				String handlerName = (String) handler;
 				handler = getApplicationContext().getBean(handlerName);

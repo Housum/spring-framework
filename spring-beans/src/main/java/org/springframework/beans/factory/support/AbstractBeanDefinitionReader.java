@@ -33,6 +33,10 @@ import org.springframework.core.io.support.ResourcePatternResolver;
 import org.springframework.util.Assert;
 
 /**
+ * 抽象实现 底层实现可以配置多种形式
+ * 比如
+ * @see org.springframework.beans.factory.groovy.GroovyBeanDefinitionReader
+ *
  * Abstract base class for bean definition readers which implement
  * the {@link BeanDefinitionReader} interface.
  *
@@ -49,6 +53,10 @@ public abstract class AbstractBeanDefinitionReader implements EnvironmentCapable
 	/** Logger available to subclasses */
 	protected final Log logger = LogFactory.getLog(getClass());
 
+	/**
+	 * BeanDefinition的注册器 一般都是传入的
+	 * BeanFactory兼任实现的
+	 */
 	private final BeanDefinitionRegistry registry;
 
 	private ResourceLoader resourceLoader;

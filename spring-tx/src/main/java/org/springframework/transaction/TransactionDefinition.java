@@ -19,6 +19,9 @@ package org.springframework.transaction;
 import java.sql.Connection;
 
 /**
+ *
+ * 事务定义
+ *
  * Interface that defines Spring-compliant transaction properties.
  * Based on the propagation behavior definitions analogous to EJB CMT attributes.
  *

@@ -76,6 +76,7 @@ public abstract class TransactionAspectSupport implements BeanFactoryAware, Init
 	// class for AspectJ aspects (which are not allowed to implement Serializable)!
 
 	/**
+	 *
 	 * Holder to support the {@code currentTransactionStatus()} method,
 	 * and to support communication between different cooperating advices
 	 * (e.g. before and after advice) if the aspect involves more than a
@@ -84,7 +85,7 @@ public abstract class TransactionAspectSupport implements BeanFactoryAware, Init
 	private static final ThreadLocal<TransactionInfo> transactionInfoHolder =
 			new NamedThreadLocal<TransactionInfo>("Current aspect-driven transaction");
 
-
+	//事务管理器
 	private final ConcurrentHashMap<Object, PlatformTransactionManager> transactionManagerCache =
 			new ConcurrentHashMap<Object, PlatformTransactionManager>();
 
@@ -129,6 +130,8 @@ public abstract class TransactionAspectSupport implements BeanFactoryAware, Init
 
 	/**
 	 * Default transaction manager bean name.
+	 * 默认的事务名
+	 * # AnnotationDrivenBeanDefinitionParser#registerTransactionManager(org.w3c.dom.Element, org.springframework.beans.factory.config.BeanDefinition)
 	 */
 	private String transactionManagerBeanName;
 
@@ -267,10 +270,16 @@ public abstract class TransactionAspectSupport implements BeanFactoryAware, Init
 			throws Throwable {
 
 		// If the transaction attribute is null, the method is non-transactional.
+		//第一步进行事务属性的解析 比如 隔离级别 传播行为等等 都封装在这里
 		final TransactionAttribute txAttr = getTransactionAttributeSource().getTransactionAttribute(method, targetClass);
+		//获取事务管理器  EG:org.springframework.jdbc.datasource.DataSourceTransactionManager
+		//首先从txAttr中获取事务管理器 因为注解中是可以进行指定的 然后从配置中获取 <tx:annotation-driven transaction-manager="bizTransactionManager"/>
+		//最后就是从容器中获取PlatformTransactionManager类型事务管理器
 		final PlatformTransactionManager tm = determineTransactionManager(txAttr);
+		//AOP概念 当前事务的连接点 类名.方法
 		final String joinpointIdentification = methodIdentification(method, targetClass);
 
+		//TODO 如果不存在的话 为啥还要做解析 直接返回不可以吗
 		if (txAttr == null || !(tm instanceof CallbackPreferringPlatformTransactionManager)) {
 			// Standard transaction demarcation with getTransaction and commit/rollback calls.
 			TransactionInfo txInfo = createTransactionIfNecessary(tm, txAttr, joinpointIdentification);
@@ -282,12 +291,15 @@ public abstract class TransactionAspectSupport implements BeanFactoryAware, Init
 			}
 			catch (Throwable ex) {
 				// target invocation exception
+				//捕获到异常
 				completeTransactionAfterThrowing(txInfo, ex);
 				throw ex;
 			}
 			finally {
+				//执行之后 恢复之前的状态 如果之前有事务的话 那么将之前的事务给还原
 				cleanupTransactionInfo(txInfo);
 			}
+			//没有捕获到异常的话 那么进行提交
 			commitTransactionAfterReturning(txInfo);
 			return retVal;
 		}
@@ -354,14 +366,17 @@ public abstract class TransactionAspectSupport implements BeanFactoryAware, Init
 		if (txAttr == null || this.beanFactory == null) {
 			return getTransactionManager();
 		}
+		//如果在执行的时候制定了事务管理器 那么获取
 		String qualifier = txAttr.getQualifier();
 		if (StringUtils.hasText(qualifier)) {
 			return determineQualifiedTransactionManager(qualifier);
 		}
 		else if (StringUtils.hasText(this.transactionManagerBeanName)) {
+			//如果没有指定的话
 			return determineQualifiedTransactionManager(this.transactionManagerBeanName);
 		}
 		else {
+			//如果也没有指定的话 那么从环境中获取一个事务管理器
 			PlatformTransactionManager defaultTransactionManager = getTransactionManager();
 			if (defaultTransactionManager == null) {
 				defaultTransactionManager = this.beanFactory.getBean(PlatformTransactionManager.class);
@@ -392,6 +407,7 @@ public abstract class TransactionAspectSupport implements BeanFactoryAware, Init
 	 * @see org.springframework.util.ClassUtils#getQualifiedMethodName
 	 */
 	protected String methodIdentification(Method method, Class<?> targetClass) {
+		//这句代码有一定的迷惑性 ==!
 		return (targetClass != null ? targetClass : method.getDeclaringClass()).getName() + "." + method.getName();
 	}
 
@@ -424,6 +440,7 @@ public abstract class TransactionAspectSupport implements BeanFactoryAware, Init
 		TransactionStatus status = null;
 		if (txAttr != null) {
 			if (tm != null) {
+				//获取一个事务对象或者创建一个事务对象 对于传播行为的不同有不同的行为
 				status = tm.getTransaction(txAttr);
 			}
 			else {
@@ -433,6 +450,7 @@ public abstract class TransactionAspectSupport implements BeanFactoryAware, Init
 				}
 			}
 		}
+		//事务准备阶段 这个阶段就是将事务进行保存到线程的ThreadLocal上面去
 		return prepareTransactionInfo(tm, txAttr, joinpointIdentification, status);
 	}
 
@@ -447,6 +465,7 @@ public abstract class TransactionAspectSupport implements BeanFactoryAware, Init
 	protected TransactionInfo prepareTransactionInfo(PlatformTransactionManager tm,
 			TransactionAttribute txAttr, String joinpointIdentification, TransactionStatus status) {
 
+		//保存事务信息
 		TransactionInfo txInfo = new TransactionInfo(tm, txAttr, joinpointIdentification);
 		if (txAttr != null) {
 			// We need a transaction for this method
@@ -468,6 +487,7 @@ public abstract class TransactionAspectSupport implements BeanFactoryAware, Init
 		// We always bind the TransactionInfo to the thread, even if we didn't create
 		// a new transaction here. This guarantees that the TransactionInfo stack
 		// will be managed correctly even if no transaction was created by this aspect.
+		//将当前的事务信息保存到当前的ThreadLocal中 便于后面的使用
 		txInfo.bindToThread();
 		return txInfo;
 	}
@@ -498,6 +518,7 @@ public abstract class TransactionAspectSupport implements BeanFactoryAware, Init
 				logger.trace("Completing transaction for [" + txInfo.getJoinpointIdentification() +
 						"] after exception: " + ex);
 			}
+			//如果需要回滚的话
 			if (txInfo.transactionAttribute.rollbackOn(ex)) {
 				try {
 					txInfo.getTransactionManager().rollback(txInfo.getTransactionStatus());
@@ -552,6 +573,9 @@ public abstract class TransactionAspectSupport implements BeanFactoryAware, Init
 
 
 	/**
+	 *
+	 *  保存当前的事务
+	 *
 	 * Opaque object used to hold Transaction information. Subclasses
 	 * must pass it back to methods on this class, but not see its internals.
 	 */
@@ -607,6 +631,7 @@ public abstract class TransactionAspectSupport implements BeanFactoryAware, Init
 		}
 
 		private void bindToThread() {
+			//暴露当前的事务 并且将之前存在的事务进行保存 便于回滚之后进行恢复
 			// Expose current TransactionStatus, preserving any existing TransactionStatus
 			// for restoration after this transaction is complete.
 			this.oldTransactionInfo = transactionInfoHolder.get();

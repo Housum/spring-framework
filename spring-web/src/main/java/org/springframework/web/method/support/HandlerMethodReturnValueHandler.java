@@ -20,6 +20,11 @@ import org.springframework.core.MethodParameter;
 import org.springframework.web.context.request.NativeWebRequest;
 
 /**
+ *
+ * @see HandlerMethodArgumentResolver 类似 一个是解析参数
+ * 当前这个就是解析返回值的
+ *
+ *
  * Strategy interface to handle the value returned from the invocation of a
  * handler method .
  *
@@ -30,6 +35,8 @@ import org.springframework.web.context.request.NativeWebRequest;
 public interface HandlerMethodReturnValueHandler {
 
 	/**
+	 * 支持的种类
+	 *
 	 * Whether the given {@linkplain MethodParameter method return type} is
 	 * supported by this handler.
 	 * @param returnType the method return type to check
@@ -39,6 +46,9 @@ public interface HandlerMethodReturnValueHandler {
 	boolean supportsReturnType(MethodParameter returnType);
 
 	/**
+	 *
+	 * 将返回值进行设置
+	 *
 	 * Handle the given return value by adding attributes to the model and
 	 * setting a view or setting the
 	 * {@link ModelAndViewContainer#setRequestHandled} flag to {@code true}

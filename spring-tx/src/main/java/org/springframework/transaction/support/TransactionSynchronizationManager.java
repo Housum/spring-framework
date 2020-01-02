@@ -76,22 +76,31 @@ import org.springframework.util.Assert;
 public abstract class TransactionSynchronizationManager {
 
 	private static final Log logger = LogFactory.getLog(TransactionSynchronizationManager.class);
-
+	/**
+	 * 事务资源
+	 */
 	private static final ThreadLocal<Map<Object, Object>> resources =
 			new NamedThreadLocal<Map<Object, Object>>("Transactional resources");
 
+	/**
+	 * 事务回调
+	 */
 	private static final ThreadLocal<Set<TransactionSynchronization>> synchronizations =
 			new NamedThreadLocal<Set<TransactionSynchronization>>("Transaction synchronizations");
 
+	//当前事务的名称
 	private static final ThreadLocal<String> currentTransactionName =
 			new NamedThreadLocal<String>("Current transaction name");
 
+	//当前事务的是否可读属性
 	private static final ThreadLocal<Boolean> currentTransactionReadOnly =
 			new NamedThreadLocal<Boolean>("Current transaction read-only status");
 
+	//当前事务的隔离级别
 	private static final ThreadLocal<Integer> currentTransactionIsolationLevel =
 			new NamedThreadLocal<Integer>("Current transaction isolation level");
 
+	//当前的事务是否是激活状态
 	private static final ThreadLocal<Boolean> actualTransactionActive =
 			new NamedThreadLocal<Boolean>("Actual transaction active");
 
@@ -134,7 +143,9 @@ public abstract class TransactionSynchronizationManager {
 	 * @see ResourceTransactionManager#getResourceFactory()
 	 */
 	public static Object getResource(Object key) {
+		//这一步只是为了防止对象是被代理了 而不是真实的对象
 		Object actualKey = TransactionSynchronizationUtils.unwrapResourceIfNecessary(key);
+		//获取资源
 		Object value = doGetResource(actualKey);
 		if (value != null && logger.isTraceEnabled()) {
 			logger.trace("Retrieved value [" + value + "] for key [" + actualKey + "] bound to thread [" +

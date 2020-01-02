@@ -17,6 +17,8 @@
 package org.springframework.aop.framework;
 
 /**
+ * AOP 代理对象
+ *
  * Delegate interface for a configured AOP proxy, allowing for the creation
  * of actual proxy objects.
  *
@@ -30,6 +32,7 @@ package org.springframework.aop.framework;
 public interface AopProxy {
 
 	/**
+	 * 获取代理对象
 	 * Create a new proxy object.
 	 * <p>Uses the AopProxy's default class loader (if necessary for proxy creation):
 	 * usually, the thread context class loader.

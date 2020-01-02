@@ -39,6 +39,7 @@ import org.springframework.beans.factory.xml.NamespaceHandlerSupport;
  */
 public class TxNamespaceHandler extends NamespaceHandlerSupport {
 
+	//事务管理器的名称 将活从容器中查询这两个的名称
 	static final String TRANSACTION_MANAGER_ATTRIBUTE = "transaction-manager";
 
 	static final String DEFAULT_TRANSACTION_MANAGER_BEAN_NAME = "transactionManager";

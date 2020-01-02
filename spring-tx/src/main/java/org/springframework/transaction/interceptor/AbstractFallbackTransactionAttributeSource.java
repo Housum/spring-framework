@@ -29,6 +29,9 @@ import org.springframework.core.MethodClassKey;
 import org.springframework.util.ClassUtils;
 
 /**
+ *
+ *fallback事务策略 如果方法上面没有定义事务注解的 那么将采用类上面的注解作为当前方法的属性
+ *
  * Abstract implementation of {@link TransactionAttributeSource} that caches
  * attributes for methods and implements a fallback policy: 1. specific target
  * method; 2. target class; 3. declaring method; 4. declaring class/interface.
@@ -51,6 +54,8 @@ import org.springframework.util.ClassUtils;
 public abstract class AbstractFallbackTransactionAttributeSource implements TransactionAttributeSource {
 
 	/**
+	 * 对于木有定义事务的 将会使用该对象表示
+	 *
 	 * Canonical value held in cache to indicate no transaction attribute was
 	 * found for this method, and we don't need to look again.
 	 */
@@ -65,6 +70,7 @@ public abstract class AbstractFallbackTransactionAttributeSource implements Tran
 	protected final Log logger = LogFactory.getLog(getClass());
 
 	/**
+	 * 事务属性的缓存 key是对象+方法
 	 * Cache of TransactionAttributes, keyed by method on a specific target class.
 	 * <p>As this base class is not marked Serializable, the cache will be recreated
 	 * after serialization - provided that the concrete subclass is Serializable.
@@ -83,11 +89,13 @@ public abstract class AbstractFallbackTransactionAttributeSource implements Tran
 	@Override
 	public TransactionAttribute getTransactionAttribute(Method method, Class<?> targetClass) {
 		// First, see if we have a cached value.
+		//先从缓存中查询是否存在
 		Object cacheKey = getCacheKey(method, targetClass);
 		Object cached = this.attributeCache.get(cacheKey);
 		if (cached != null) {
 			// Value will either be canonical value indicating there is no transaction attribute,
 			// or an actual transaction attribute.
+			//表示木有
 			if (cached == NULL_TRANSACTION_ATTRIBUTE) {
 				return null;
 			}
@@ -97,6 +105,7 @@ public abstract class AbstractFallbackTransactionAttributeSource implements Tran
 		}
 		else {
 			// We need to work it out.
+			//这里开始查询
 			TransactionAttribute txAtt = computeTransactionAttribute(method, targetClass);
 			// Put it in the cache.
 			if (txAtt == null) {
@@ -135,10 +144,12 @@ public abstract class AbstractFallbackTransactionAttributeSource implements Tran
 	 */
 	protected TransactionAttribute computeTransactionAttribute(Method method, Class<?> targetClass) {
 		// Don't allow no-public methods as required.
+		//是否只是允许public方法 底层实现默认是只允许公共方法
 		if (allowPublicMethodsOnly() && !Modifier.isPublic(method.getModifiers())) {
 			return null;
 		}
 
+		//对于AOP的方法 获取真实的类
 		// Ignore CGLIB subclasses - introspect the actual user class.
 		Class<?> userClass = ClassUtils.getUserClass(targetClass);
 		// The method may be on an interface, but we need attributes from the target class.
@@ -148,11 +159,13 @@ public abstract class AbstractFallbackTransactionAttributeSource implements Tran
 		specificMethod = BridgeMethodResolver.findBridgedMethod(specificMethod);
 
 		// First try is the method in the target class.
+		//获取
 		TransactionAttribute txAtt = findTransactionAttribute(specificMethod);
 		if (txAtt != null) {
 			return txAtt;
 		}
 
+		//如果方案上面木有的话 那么从类上获取
 		// Second try is the transaction attribute on the target class.
 		txAtt = findTransactionAttribute(specificMethod.getDeclaringClass());
 		if (txAtt != null && ClassUtils.isUserLevelMethod(method)) {
@@ -177,6 +190,7 @@ public abstract class AbstractFallbackTransactionAttributeSource implements Tran
 
 
 	/**
+	 * 从方法上获取
 	 * Subclasses need to implement this to return the transaction attribute
 	 * for the given method, if any.
 	 * @param method the method to retrieve the attribute for
@@ -186,6 +200,7 @@ public abstract class AbstractFallbackTransactionAttributeSource implements Tran
 	protected abstract TransactionAttribute findTransactionAttribute(Method method);
 
 	/**
+	 * 从类上面获取
 	 * Subclasses need to implement this to return the transaction attribute
 	 * for the given class, if any.
 	 * @param clazz the class to retrieve the attribute for

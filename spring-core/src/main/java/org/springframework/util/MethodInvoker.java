@@ -294,6 +294,7 @@ public class MethodInvoker {
 		int result = 0;
 		for (int i = 0; i < paramTypes.length; i++) {
 			if (!ClassUtils.isAssignableValue(paramTypes[i], args[i])) {
+				//如果不是其子类 那么差别就非常的大了
 				return Integer.MAX_VALUE;
 			}
 			if (args[i] != null) {

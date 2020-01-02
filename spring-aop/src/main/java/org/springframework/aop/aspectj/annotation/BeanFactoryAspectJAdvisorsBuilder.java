@@ -83,6 +83,7 @@ public class BeanFactoryAspectJAdvisorsBuilder {
 		List<String> aspectNames = null;
 
 		synchronized (this) {
+			//缓存 这里只需要解析一次就可以
 			aspectNames = this.aspectBeanNames;
 			if (aspectNames == null) {
 				List<Advisor> advisors = new LinkedList<Advisor>();
@@ -100,14 +101,18 @@ public class BeanFactoryAspectJAdvisorsBuilder {
 					if (beanType == null) {
 						continue;
 					}
+					//这里做的工作是查询该类是否具有@Aspect注解,如果存在该注解的话 那么进行切点的解析
 					if (this.advisorFactory.isAspect(beanType)) {
 						aspectNames.add(beanName);
+						//创建一个AspectJ元数据
 						AspectMetadata amd = new AspectMetadata(beanType, beanName);
+						//判断是否是单例
 						if (amd.getAjType().getPerClause().getKind() == PerClauseKind.SINGLETON) {
-							MetadataAwareAspectInstanceFactory factory =
-									new BeanFactoryAspectInstanceFactory(this.beanFactory, beanName);
+							MetadataAwareAspectInstanceFactory factory = new BeanFactoryAspectInstanceFactory(this.beanFactory, beanName);
+							//这一步非常的重要 这一步就是从注解中进行构造通知的过程
 							List<Advisor> classAdvisors = this.advisorFactory.getAdvisors(factory);
 							if (this.beanFactory.isSingleton(beanName)) {
+								//进行缓存
 								this.advisorsCache.put(beanName, classAdvisors);
 							}
 							else {
@@ -121,8 +126,7 @@ public class BeanFactoryAspectJAdvisorsBuilder {
 								throw new IllegalArgumentException("Bean with name '" + beanName +
 										"' is a singleton, but aspect instantiation model is not singleton");
 							}
-							MetadataAwareAspectInstanceFactory factory =
-									new PrototypeAspectInstanceFactory(this.beanFactory, beanName);
+							MetadataAwareAspectInstanceFactory factory = new PrototypeAspectInstanceFactory(this.beanFactory, beanName);
 							this.aspectFactoryCache.put(beanName, factory);
 							advisors.addAll(this.advisorFactory.getAdvisors(factory));
 						}
@@ -140,9 +144,11 @@ public class BeanFactoryAspectJAdvisorsBuilder {
 		for (String aspectName : aspectNames) {
 			List<Advisor> cachedAdvisors = this.advisorsCache.get(aspectName);
 			if (cachedAdvisors != null) {
+				//单例的方式下 直接给将通知给解析出来了
 				advisors.addAll(cachedAdvisors);
 			}
 			else {
+				//给单例的方式每一次都将构建一次表达式
 				MetadataAwareAspectInstanceFactory factory = this.aspectFactoryCache.get(aspectName);
 				advisors.addAll(this.advisorFactory.getAdvisors(factory));
 			}

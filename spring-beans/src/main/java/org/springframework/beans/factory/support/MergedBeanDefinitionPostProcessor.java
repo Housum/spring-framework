@@ -19,6 +19,11 @@ package org.springframework.beans.factory.support;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 
 /**
+ * 在new好对象之后,在处理类之前 提供了修改合并之后的beanDefinition属性的能力
+ *
+ * @see AbstractBeanFactory#getMergedBeanDefinition(java.lang.String)
+ * @see AbstractAutowireCapableBeanFactory#doCreateBean(java.lang.String, org.springframework.beans.factory.support.RootBeanDefinition, java.lang.Object[])
+ *
  * Post-processor callback interface for <i>merged</i> bean definitions at runtime.
  * {@link BeanPostProcessor} implementations may implement this sub-interface in
  * order to post-process the merged bean definition that the Spring BeanFactory

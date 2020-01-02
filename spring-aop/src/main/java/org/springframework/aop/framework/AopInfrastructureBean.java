@@ -17,6 +17,9 @@
 package org.springframework.aop.framework;
 
 /**
+ *
+ * 表示这是一个AOP infrastructure
+ *
  * Marker interface that indicates a bean that is part of Spring's
  * AOP infrastructure. In particular, this implies that any such bean
  * is not subject to auto-proxying, even if a pointcut would match.

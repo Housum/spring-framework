@@ -17,6 +17,8 @@
 package org.springframework.aop;
 
 /**
+ * 保存被加强的实例对象
+ *
  * A {@code TargetSource} is used to obtain the current "target" of
  * an AOP invocation, which will be invoked via reflection if no around
  * advice chooses to end the interceptor chain itself.

@@ -30,6 +30,9 @@ import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.util.Assert;
 
 /**
+ *
+ * 帮助类 查询通知
+ *
  * Helper for retrieving standard Spring Advisors from a BeanFactory,
  * for use with auto-proxying.
  *
@@ -89,11 +92,13 @@ public class BeanFactoryAdvisorRetrievalHelper {
 				}
 				else {
 					try {
+						//获取到Bean实例
 						advisors.add(this.beanFactory.getBean(name, Advisor.class));
 					}
 					catch (BeanCreationException ex) {
 						Throwable rootCause = ex.getMostSpecificCause();
 						if (rootCause instanceof BeanCurrentlyInCreationException) {
+							//这个异常是在我们创建的Bean正在创建中(循环依赖的情况)
 							BeanCreationException bce = (BeanCreationException) rootCause;
 							if (this.beanFactory.isCurrentlyInCreation(bce.getBeanName())) {
 								if (logger.isDebugEnabled()) {

@@ -19,6 +19,11 @@ package org.springframework.transaction.support;
 import java.io.Flushable;
 
 /**
+ * 事务同步回调
+ *
+ *
+ * 在事务上发生了一些操作 将会进行回调
+ *
  * Interface for transaction synchronization callbacks.
  * Supported by AbstractPlatformTransactionManager.
  *

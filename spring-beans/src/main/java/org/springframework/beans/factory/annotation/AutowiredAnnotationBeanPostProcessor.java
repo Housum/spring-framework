@@ -67,7 +67,14 @@ import org.springframework.util.ReflectionUtils;
 import org.springframework.util.StringUtils;
 
 /**
- * {@link org.springframework.beans.factory.config.BeanPostProcessor} implementation
+ *
+ * 注解方式
+ *
+ * 支持Autowired，Value，Inject三种注解的方式
+ *
+ * 需要配置"context:annotation-config" and "context:component-scan"
+ *
+ * {@link ohrg.springframework.beans.factory.config.BeanPostProcessor} implementation
  * that autowires annotated fields, setter methods and arbitrary config methods.
  * Such members to be injected are detected through a Java 5 annotation: by default,
  * Spring's {@link Autowired @Autowired} and {@link Value @Value} annotations.
@@ -405,6 +412,12 @@ public class AutowiredAnnotationBeanPostProcessor extends InstantiationAwareBean
 		return metadata;
 	}
 
+	/**
+	 * 从类的方法和字段中找到注解信息
+	 * 
+	 * @param clazz
+	 * @return
+	 */
 	private InjectionMetadata buildAutowiringMetadata(final Class<?> clazz) {
 		LinkedList<InjectionMetadata.InjectedElement> elements = new LinkedList<InjectionMetadata.InjectedElement>();
 		Class<?> targetClass = clazz;
@@ -413,11 +426,14 @@ public class AutowiredAnnotationBeanPostProcessor extends InstantiationAwareBean
 			final LinkedList<InjectionMetadata.InjectedElement> currElements =
 					new LinkedList<InjectionMetadata.InjectedElement>();
 
+			//字段注入
 			ReflectionUtils.doWithLocalFields(targetClass, new ReflectionUtils.FieldCallback() {
 				@Override
 				public void doWith(Field field) throws IllegalArgumentException, IllegalAccessException {
+					//找到指定了直接的字段
 					AnnotationAttributes ann = findAutowiredAnnotation(field);
 					if (ann != null) {
+						//静态字段是不支持的
 						if (Modifier.isStatic(field.getModifiers())) {
 							if (logger.isWarnEnabled()) {
 								logger.warn("Autowired annotation is not supported on static fields: " + field);
@@ -430,6 +446,7 @@ public class AutowiredAnnotationBeanPostProcessor extends InstantiationAwareBean
 				}
 			});
 
+			//方法注入
 			ReflectionUtils.doWithLocalMethods(targetClass, new ReflectionUtils.MethodCallback() {
 				@Override
 				public void doWith(Method method) throws IllegalArgumentException, IllegalAccessException {
@@ -460,6 +477,7 @@ public class AutowiredAnnotationBeanPostProcessor extends InstantiationAwareBean
 			elements.addAll(0, currElements);
 			targetClass = targetClass.getSuperclass();
 		}
+		//这里就是从类层级一只往上查询
 		while (targetClass != null && targetClass != Object.class);
 
 		return new InjectionMetadata(clazz, elements);
@@ -595,6 +613,7 @@ public class AutowiredAnnotationBeanPostProcessor extends InstantiationAwareBean
 			}
 			if (value != null) {
 				ReflectionUtils.makeAccessible(field);
+				//这里进行了操作
 				field.set(bean, value);
 			}
 		}
@@ -680,6 +699,7 @@ public class AutowiredAnnotationBeanPostProcessor extends InstantiationAwareBean
 			}
 			if (arguments != null) {
 				try {
+					//方法注解注入
 					ReflectionUtils.makeAccessible(method);
 					method.invoke(bean, arguments);
 				}

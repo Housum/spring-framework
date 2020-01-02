@@ -22,6 +22,9 @@ import org.springframework.core.task.AsyncTaskExecutor;
 import org.springframework.web.context.request.NativeWebRequest;
 
 /**
+ *
+ * 异步请求时间拦截器 在异步任务执行之外和之后都会被回调
+ *
  * Intercepts concurrent request handling, where the concurrent result is
  * obtained by executing a {@link Callable} on behalf of the application with
  * an {@link AsyncTaskExecutor}.

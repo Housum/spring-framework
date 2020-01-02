@@ -17,6 +17,8 @@
 package org.springframework.beans.factory;
 
 /**
+ * Bean工厂
+ *
  * Interface to be implemented by objects used within a {@link BeanFactory}
  * which are themselves factories. If a bean implements this interface,
  * it is used as a factory for an object to expose, not directly as a bean

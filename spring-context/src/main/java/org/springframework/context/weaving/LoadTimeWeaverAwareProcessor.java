@@ -25,6 +25,10 @@ import org.springframework.instrument.classloading.LoadTimeWeaver;
 import org.springframework.util.Assert;
 
 /**
+ * 动态织入
+ * https://zhuanlan.zhihu.com/p/81965927 3.2 Instrument
+ *
+ * <p>
  * {@link org.springframework.beans.factory.config.BeanPostProcessor}
  * implementation that passes the context's default {@link LoadTimeWeaver}
  * to beans that implement the {@link LoadTimeWeaverAware} interface.
@@ -36,75 +40,77 @@ import org.springframework.util.Assert;
  * <p>Applications should not use this class directly.
  *
  * @author Juergen Hoeller
- * @since 2.5
  * @see LoadTimeWeaverAware
  * @see org.springframework.context.ConfigurableApplicationContext#LOAD_TIME_WEAVER_BEAN_NAME
+ * @since 2.5
  */
 public class LoadTimeWeaverAwareProcessor implements BeanPostProcessor, BeanFactoryAware {
 
-	private LoadTimeWeaver loadTimeWeaver;
+    private LoadTimeWeaver loadTimeWeaver;
 
-	private BeanFactory beanFactory;
-
-
-	/**
-	 * Create a new {@code LoadTimeWeaverAwareProcessor} that will
-	 * auto-retrieve the {@link LoadTimeWeaver} from the containing
-	 * {@link BeanFactory}, expecting a bean named
-	 * {@link ConfigurableApplicationContext#LOAD_TIME_WEAVER_BEAN_NAME "loadTimeWeaver"}.
-	 */
-	public LoadTimeWeaverAwareProcessor() {
-	}
-
-	/**
-	 * Create a new {@code LoadTimeWeaverAwareProcessor} for the given
-	 * {@link LoadTimeWeaver}.
-	 * <p>If the given {@code loadTimeWeaver} is {@code null}, then a
-	 * {@code LoadTimeWeaver} will be auto-retrieved from the containing
-	 * {@link BeanFactory}, expecting a bean named
-	 * {@link ConfigurableApplicationContext#LOAD_TIME_WEAVER_BEAN_NAME "loadTimeWeaver"}.
-	 * @param loadTimeWeaver the specific {@code LoadTimeWeaver} that is to be used
-	 */
-	public LoadTimeWeaverAwareProcessor(LoadTimeWeaver loadTimeWeaver) {
-		this.loadTimeWeaver = loadTimeWeaver;
-	}
-
-	/**
-	 * Create a new {@code LoadTimeWeaverAwareProcessor}.
-	 * <p>The {@code LoadTimeWeaver} will be auto-retrieved from
-	 * the given {@link BeanFactory}, expecting a bean named
-	 * {@link ConfigurableApplicationContext#LOAD_TIME_WEAVER_BEAN_NAME "loadTimeWeaver"}.
-	 * @param beanFactory the BeanFactory to retrieve the LoadTimeWeaver from
-	 */
-	public LoadTimeWeaverAwareProcessor(BeanFactory beanFactory) {
-		this.beanFactory = beanFactory;
-	}
+    private BeanFactory beanFactory;
 
 
-	@Override
-	public void setBeanFactory(BeanFactory beanFactory) {
-		this.beanFactory = beanFactory;
-	}
+    /**
+     * Create a new {@code LoadTimeWeaverAwareProcessor} that will
+     * auto-retrieve the {@link LoadTimeWeaver} from the containing
+     * {@link BeanFactory}, expecting a bean named
+     * {@link ConfigurableApplicationContext#LOAD_TIME_WEAVER_BEAN_NAME "loadTimeWeaver"}.
+     */
+    public LoadTimeWeaverAwareProcessor() {
+    }
+
+    /**
+     * Create a new {@code LoadTimeWeaverAwareProcessor} for the given
+     * {@link LoadTimeWeaver}.
+     * <p>If the given {@code loadTimeWeaver} is {@code null}, then a
+     * {@code LoadTimeWeaver} will be auto-retrieved from the containing
+     * {@link BeanFactory}, expecting a bean named
+     * {@link ConfigurableApplicationContext#LOAD_TIME_WEAVER_BEAN_NAME "loadTimeWeaver"}.
+     *
+     * @param loadTimeWeaver the specific {@code LoadTimeWeaver} that is to be used
+     */
+    public LoadTimeWeaverAwareProcessor(LoadTimeWeaver loadTimeWeaver) {
+        this.loadTimeWeaver = loadTimeWeaver;
+    }
+
+    /**
+     * Create a new {@code LoadTimeWeaverAwareProcessor}.
+     * <p>The {@code LoadTimeWeaver} will be auto-retrieved from
+     * the given {@link BeanFactory}, expecting a bean named
+     * {@link ConfigurableApplicationContext#LOAD_TIME_WEAVER_BEAN_NAME "loadTimeWeaver"}.
+     *
+     * @param beanFactory the BeanFactory to retrieve the LoadTimeWeaver from
+     */
+    public LoadTimeWeaverAwareProcessor(BeanFactory beanFactory) {
+        this.beanFactory = beanFactory;
+    }
 
 
-	@Override
-	public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
-		if (bean instanceof LoadTimeWeaverAware) {
-			LoadTimeWeaver ltw = this.loadTimeWeaver;
-			if (ltw == null) {
-				Assert.state(this.beanFactory != null,
-						"BeanFactory required if no LoadTimeWeaver explicitly specified");
-				ltw = this.beanFactory.getBean(
-						ConfigurableApplicationContext.LOAD_TIME_WEAVER_BEAN_NAME, LoadTimeWeaver.class);
-			}
-			((LoadTimeWeaverAware) bean).setLoadTimeWeaver(ltw);
-		}
-		return bean;
-	}
+    @Override
+    public void setBeanFactory(BeanFactory beanFactory) {
+        this.beanFactory = beanFactory;
+    }
 
-	@Override
-	public Object postProcessAfterInitialization(Object bean, String name) {
-		return bean;
-	}
+
+    @Override
+    public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
+        if (bean instanceof LoadTimeWeaverAware) {
+            LoadTimeWeaver ltw = this.loadTimeWeaver;
+            if (ltw == null) {
+                Assert.state(this.beanFactory != null,
+                        "BeanFactory required if no LoadTimeWeaver explicitly specified");
+                ltw = this.beanFactory.getBean(
+                        ConfigurableApplicationContext.LOAD_TIME_WEAVER_BEAN_NAME, LoadTimeWeaver.class);
+            }
+            ((LoadTimeWeaverAware) bean).setLoadTimeWeaver(ltw);
+        }
+        return bean;
+    }
+
+    @Override
+    public Object postProcessAfterInitialization(Object bean, String name) {
+        return bean;
+    }
 
 }

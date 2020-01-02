@@ -29,6 +29,7 @@ import org.springframework.aop.aspectj.AspectJExpressionPointcut;
 import org.springframework.aop.aspectj.AspectJPrecedenceInformation;
 import org.springframework.aop.aspectj.InstantiationModelAwarePointcutAdvisor;
 import org.springframework.aop.aspectj.annotation.AbstractAspectJAdvisorFactory.AspectJAnnotation;
+import org.springframework.aop.framework.ReflectiveMethodInvocation;
 import org.springframework.aop.support.DynamicMethodMatcherPointcut;
 import org.springframework.aop.support.Pointcuts;
 
@@ -77,14 +78,21 @@ class InstantiationModelAwarePointcutAdvisorImpl
 			Method aspectJAdviceMethod, AspectJAdvisorFactory aspectJAdvisorFactory,
 			MetadataAwareAspectInstanceFactory aspectInstanceFactory, int declarationOrder, String aspectName) {
 
+		//切点表达式
 		this.declaredPointcut = declaredPointcut;
+		//所属的类
 		this.declaringClass = aspectJAdviceMethod.getDeclaringClass();
+		//所属的方法
 		this.methodName = aspectJAdviceMethod.getName();
+		//参数类型
 		this.parameterTypes = aspectJAdviceMethod.getParameterTypes();
+		//定义通知的方法
 		this.aspectJAdviceMethod = aspectJAdviceMethod;
 		this.aspectJAdvisorFactory = aspectJAdvisorFactory;
 		this.aspectInstanceFactory = aspectInstanceFactory;
+		//在切面的位置 0开始
 		this.declarationOrder = declarationOrder;
+		//切面名称
 		this.aspectName = aspectName;
 
 		if (aspectInstanceFactory.getAspectMetadata().isLazilyInstantiated()) {
@@ -95,11 +103,11 @@ class InstantiationModelAwarePointcutAdvisorImpl
 			// Make it dynamic: must mutate from pre-instantiation to post-instantiation state.
 			// If it's not a dynamic pointcut, it may be optimized out
 			// by the Spring AOP infrastructure after the first evaluation.
-			this.pointcut = new PerTargetInstantiationModelPointcut(
-					this.declaredPointcut, preInstantiationPointcut, aspectInstanceFactory);
+			this.pointcut = new PerTargetInstantiationModelPointcut(this.declaredPointcut, preInstantiationPointcut, aspectInstanceFactory);
 			this.lazy = true;
 		}
 		else {
+			//对于单例的方式
 			// A singleton aspect.
 			this.pointcut = this.declaredPointcut;
 			this.lazy = false;
@@ -136,6 +144,10 @@ class InstantiationModelAwarePointcutAdvisorImpl
 
 	/**
 	 * Lazily instantiate advice if necessary.
+	 * 这个切点非常的重要 因为后面拦截器执行的时候就是通过
+	 * 这种方式进行执行的
+	 *
+	 * @see ReflectiveMethodInvocation#proceed()
 	 */
 	@Override
 	public synchronized Advice getAdvice() {
@@ -157,8 +169,8 @@ class InstantiationModelAwarePointcutAdvisorImpl
 
 
 	private Advice instantiateAdvice(AspectJExpressionPointcut pcut) {
-		return this.aspectJAdvisorFactory.getAdvice(this.aspectJAdviceMethod, pcut,
-				this.aspectInstanceFactory, this.declarationOrder, this.aspectName);
+		//从这里获取一个通过通知
+		return this.aspectJAdvisorFactory.getAdvice(this.aspectJAdviceMethod, pcut, this.aspectInstanceFactory, this.declarationOrder, this.aspectName);
 	}
 
 	public MetadataAwareAspectInstanceFactory getAspectInstanceFactory() {

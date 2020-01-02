@@ -491,6 +491,7 @@ public abstract class FrameworkServlet extends HttpServletBean implements Applic
 		long startTime = System.currentTimeMillis();
 
 		try {
+			//这一步是加载容器 一般都是在ContextLoaderListener中进行加载
 			this.webApplicationContext = initWebApplicationContext();
 			initFrameworkServlet();
 		}
@@ -520,6 +521,8 @@ public abstract class FrameworkServlet extends HttpServletBean implements Applic
 	 * @see #setContextConfigLocation
 	 */
 	protected WebApplicationContext initWebApplicationContext() {
+
+		//获取容器
 		WebApplicationContext rootContext =
 				WebApplicationContextUtils.getWebApplicationContext(getServletContext());
 		WebApplicationContext wac = null;
@@ -542,6 +545,7 @@ public abstract class FrameworkServlet extends HttpServletBean implements Applic
 			}
 		}
 		if (wac == null) {
+			//从ServletContext获取尝试获取
 			// No context instance was injected at construction time -> see if one
 			// has been registered in the servlet context. If one exists, it is assumed
 			// that the parent context (if any) has already been set and that the
@@ -549,6 +553,7 @@ public abstract class FrameworkServlet extends HttpServletBean implements Applic
 			wac = findWebApplicationContext();
 		}
 		if (wac == null) {
+			//如果没有的话 那么创建一个默认的
 			// No context instance is defined for this servlet -> create a local one
 			wac = createWebApplicationContext(rootContext);
 		}
@@ -557,6 +562,7 @@ public abstract class FrameworkServlet extends HttpServletBean implements Applic
 			// Either the context is not a ConfigurableApplicationContext with refresh
 			// support or the context injected at construction time had already been
 			// refreshed -> trigger initial onRefresh manually here.
+			//进行刷新操作
 			onRefresh(wac);
 		}
 
@@ -955,18 +961,25 @@ public abstract class FrameworkServlet extends HttpServletBean implements Applic
 		long startTime = System.currentTimeMillis();
 		Throwable failureCause = null;
 
+		//承接之前的语系 因为在后面可能会使用到语系
 		LocaleContext previousLocaleContext = LocaleContextHolder.getLocaleContext();
 		LocaleContext localeContext = buildLocaleContext(request);
 
 		RequestAttributes previousAttributes = RequestContextHolder.getRequestAttributes();
 		ServletRequestAttributes requestAttributes = buildRequestAttributes(request, response, previousAttributes);
 
+		//创建异步请求处理类 详情参考 Servlet3.0
 		WebAsyncManager asyncManager = WebAsyncUtils.getAsyncManager(request);
+
+		//注册一个异步请求拦截器  在异步callback执行的前后,超时等都会被回调
+        //RequestBindingInterceptor的作用就是在执行前设置参数值 在执行之后清理掉这些参数值
 		asyncManager.registerCallableInterceptor(FrameworkServlet.class.getName(), new RequestBindingInterceptor());
 
+		//这一步所做的操作就是将LocaleContext和requestAttributes放到ThreadLocal中
 		initContextHolders(request, localeContext, requestAttributes);
 
 		try {
+			//执行业务逻辑
 			doService(request, response);
 		}
 		catch (ServletException ex) {
@@ -983,6 +996,7 @@ public abstract class FrameworkServlet extends HttpServletBean implements Applic
 		}
 
 		finally {
+			//将之前的值设置回去
 			resetContextHolders(request, previousLocaleContext, previousAttributes);
 			if (requestAttributes != null) {
 				requestAttributes.requestCompleted();
@@ -1002,6 +1016,8 @@ public abstract class FrameworkServlet extends HttpServletBean implements Applic
 				}
 			}
 
+			//在处理完成之后 可以发布web请求事件处理完成
+            //@see ApplicationListener
 			publishRequestHandledEvent(request, response, startTime, failureCause);
 		}
 	}
@@ -1070,6 +1086,7 @@ public abstract class FrameworkServlet extends HttpServletBean implements Applic
 			// Whether or not we succeeded, publish an event.
 			long processingTime = System.currentTimeMillis() - startTime;
 			int statusCode = (responseGetStatusAvailable ? response.getStatus() : -1);
+			//发布事件
 			this.webApplicationContext.publishEvent(
 					new ServletRequestHandledEvent(this,
 							request.getRequestURI(), request.getRemoteAddr(),

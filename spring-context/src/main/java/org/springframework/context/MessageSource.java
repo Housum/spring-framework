@@ -19,6 +19,10 @@ package org.springframework.context;
 import java.util.Locale;
 
 /**
+ * 国际化和本地化
+ * @link https://blog.csdn.net/mupengfei6688/article/details/79060014
+ *
+ *
  * Strategy interface for resolving messages, with support for the parameterization
  * and internationalization of such messages.
  *

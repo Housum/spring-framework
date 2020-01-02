@@ -23,6 +23,8 @@ import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
 /**
+ * d
+ *
  * {@link AbstractRefreshableApplicationContext} subclass that adds common handling
  * of specified config locations. Serves as base class for XML-based application
  * context implementations such as {@link ClassPathXmlApplicationContext} and
@@ -142,6 +144,8 @@ public abstract class AbstractRefreshableConfigApplicationContext extends Abstra
 	}
 
 	/**
+	 * 在初始化完成之后 触发refresh加载容器
+	 *
 	 * Triggers {@link #refresh()} if not refreshed in the concrete context's
 	 * constructor already.
 	 */

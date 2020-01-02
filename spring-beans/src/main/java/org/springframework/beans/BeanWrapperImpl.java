@@ -31,6 +31,9 @@ import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.util.Assert;
 
 /**
+ *
+ * Bean实例 实现 其中可以进行属性的操作
+ *
  * Default {@link BeanWrapper} implementation that should be sufficient
  * for all typical use cases. Caches introspection results for efficiency.
  *
@@ -260,6 +263,9 @@ public class BeanWrapperImpl extends AbstractNestablePropertyAccessor implements
 	}
 
 
+	/**
+	 * 处理属性的设置
+	 */
 	private class BeanPropertyHandler extends PropertyHandler {
 
 		private final PropertyDescriptor pd;

@@ -35,6 +35,7 @@ public class BeanFactoryTransactionAttributeSourceAdvisor extends AbstractBeanFa
 
 	private TransactionAttributeSource transactionAttributeSource;
 
+	//切点 从这里进行将非事务类给过滤掉
 	private final TransactionAttributeSourcePointcut pointcut = new TransactionAttributeSourcePointcut() {
 		@Override
 		protected TransactionAttributeSource getTransactionAttributeSource() {

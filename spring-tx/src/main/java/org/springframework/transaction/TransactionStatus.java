@@ -19,6 +19,9 @@ package org.springframework.transaction;
 import java.io.Flushable;
 
 /**
+ *
+ * 代表了当前的事务
+ *
  * Representation of the status of a transaction.
  *
  * <p>Transactional code can use this to retrieve status information,

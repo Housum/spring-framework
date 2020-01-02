@@ -34,6 +34,8 @@ import org.springframework.context.ResourceLoaderAware;
 import org.springframework.util.StringValueResolver;
 
 /**
+ * 对XXXAware进行设置
+ *
  * {@link org.springframework.beans.factory.config.BeanPostProcessor}
  * implementation that passes the ApplicationContext to beans that
  * implement the {@link EnvironmentAware}, {@link EmbeddedValueResolverAware},

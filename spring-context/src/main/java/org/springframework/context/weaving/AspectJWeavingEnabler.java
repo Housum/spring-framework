@@ -32,6 +32,9 @@ import org.springframework.instrument.classloading.InstrumentationLoadTimeWeaver
 import org.springframework.instrument.classloading.LoadTimeWeaver;
 
 /**
+ *
+ * 动态织入 https://zhuanlan.zhihu.com/p/81965927
+ *
  * Post-processor that registers AspectJ's
  * {@link org.aspectj.weaver.loadtime.ClassPreProcessorAgentAdapter}
  * with the Spring application context's default

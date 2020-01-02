@@ -27,6 +27,9 @@ import org.springframework.core.annotation.AliasFor;
 import org.springframework.transaction.TransactionDefinition;
 
 /**
+ *
+ * 事务注释
+ *
  * Describes transaction attributes on a method or class.
  *
  * <p>This annotation type is generally directly comparable to Spring's

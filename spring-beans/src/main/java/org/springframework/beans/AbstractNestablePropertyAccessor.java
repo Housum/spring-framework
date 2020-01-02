@@ -799,12 +799,16 @@ public abstract class AbstractNestablePropertyAccessor extends AbstractPropertyA
 	}
 
 	/**
+	 *  递归直到找到一个property accessor,什么叫做nest property,就是对象属性的属性
+	 *  比如: user[password].raw raw就是user的nest属性
+	 *
 	 * Recursively navigate to return a property accessor for the nested property path.
 	 * @param propertyPath property path, which may be nested
 	 * @return a property accessor for the target bean
 	 */
 	@SuppressWarnings("unchecked")  // avoid nested generic
 	protected AbstractNestablePropertyAccessor getPropertyAccessorForPropertyPath(String propertyPath) {
+		//如果返回非-1的话 那么说明有内嵌属性
 		int pos = PropertyAccessorUtils.getFirstNestedPropertySeparatorIndex(propertyPath);
 		// Handle nested properties recursively.
 		if (pos > -1) {

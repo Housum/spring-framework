@@ -20,8 +20,14 @@ import java.beans.PropertyDescriptor;
 
 import org.springframework.beans.BeansException;
 import org.springframework.beans.PropertyValues;
+import org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor;
+import org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory;
 
 /**
+ * 这个类非常的重要 根据名称可以看出来,就是在Bean初始化之前做一些操作,以及在初始化之后做一些操作
+ * 然后在最后处理完属性之后,还会有一个回调
+ *
+ *
  * Subinterface of {@link BeanPostProcessor} that adds a before-instantiation callback,
  * and a callback after instantiation but before explicit properties are set or
  * autowiring occurs.
@@ -46,6 +52,11 @@ import org.springframework.beans.PropertyValues;
 public interface InstantiationAwareBeanPostProcessor extends BeanPostProcessor {
 
 	/**
+	 * 在Bean初始化之前,做一步操作 如果返回非null的话 那么就不走原有的逻辑了 这个创建的对象
+	 * 就是实际的对象了
+	 *
+	 * @see AbstractAutowireCapableBeanFactory#resolveBeforeInstantiation(java.lang.String, org.springframework.beans.factory.support.RootBeanDefinition)
+	 *
 	 * Apply this BeanPostProcessor <i>before the target bean gets instantiated</i>.
 	 * The returned bean object may be a proxy to use instead of the target bean,
 	 * effectively suppressing default instantiation of the target bean.
@@ -69,6 +80,8 @@ public interface InstantiationAwareBeanPostProcessor extends BeanPostProcessor {
 	Object postProcessBeforeInstantiation(Class<?> beanClass, String beanName) throws BeansException;
 
 	/**
+	 * 在实例化new之后,在填充Bean之前 进行一些操作 如果返回了false  那么就不需要往后面走了
+	 *
 	 * Perform operations after the bean has been instantiated, via a constructor or factory method,
 	 * but before Spring property population (from explicit properties or autowiring) occurs.
 	 * <p>This is the ideal callback for performing field injection on the given bean instance.
@@ -85,6 +98,9 @@ public interface InstantiationAwareBeanPostProcessor extends BeanPostProcessor {
 	boolean postProcessAfterInstantiation(Object bean, String beanName) throws BeansException;
 
 	/**
+	 * 在解析完Bean的属性之后 将会回调这个 很多的注解都是通过此实现的
+	 * @see AutowiredAnnotationBeanPostProcessor#postProcessPropertyValues(org.springframework.beans.PropertyValues, java.beans.PropertyDescriptor[], java.lang.Object, java.lang.String)
+	 *
 	 * Post-process the given property values before the factory applies them
 	 * to the given bean. Allows for checking whether all dependencies have been
 	 * satisfied, for example based on a "Required" annotation on bean property setters.

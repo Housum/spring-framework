@@ -49,6 +49,8 @@ import org.springframework.util.StringUtils;
 import org.springframework.util.xml.DomUtils;
 
 /**
+ * <aop:config>构建切面的一个过程 其底层和@Aspect是相同的
+ *
  * {@link BeanDefinitionParser} for the {@code <aop:config>} tag.
  *
  * @author Rob Harrop

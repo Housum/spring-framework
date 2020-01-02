@@ -36,6 +36,9 @@ import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 
 /**
+ *
+ * 根据参数名称进行解析
+ *
  * Abstract base class for resolving method arguments from a named value.
  * Request parameters, request headers, and path variables are examples of named
  * values. Each may have a name, a required flag, and a default value.
@@ -87,15 +90,19 @@ public abstract class AbstractNamedValueMethodArgumentResolver implements Handle
 			NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
 
 		NamedValueInfo namedValueInfo = getNamedValueInfo(parameter);
+		//是否存在内嵌
 		MethodParameter nestedParameter = parameter.nestedIfOptional();
-
+		//对于参数中存在表达式的情况下
 		Object resolvedName = resolveStringValue(namedValueInfo.name);
 		if (resolvedName == null) {
 			throw new IllegalArgumentException(
 					"Specified name must not resolve to null: [" + namedValueInfo.name + "]");
 		}
 
+		//解析出来的就是名称对于的值
 		Object arg = resolveName(resolvedName.toString(), nestedParameter, webRequest);
+
+		//解析默认的
 		if (arg == null) {
 			if (namedValueInfo.defaultValue != null) {
 				arg = resolveStringValue(namedValueInfo.defaultValue);
@@ -110,6 +117,7 @@ public abstract class AbstractNamedValueMethodArgumentResolver implements Handle
 		}
 
 		if (binderFactory != null) {
+			//进行参数的绑定 其中封装了绑定的逻辑
 			WebDataBinder binder = binderFactory.createBinder(webRequest, null, namedValueInfo.name);
 			try {
 				arg = binder.convertIfNecessary(arg, parameter.getParameterType(), parameter);
@@ -137,6 +145,7 @@ public abstract class AbstractNamedValueMethodArgumentResolver implements Handle
 		NamedValueInfo namedValueInfo = this.namedValueInfoCache.get(parameter);
 		if (namedValueInfo == null) {
 			namedValueInfo = createNamedValueInfo(parameter);
+			//对于默认情况下的处理
 			namedValueInfo = updateNamedValueInfo(parameter, namedValueInfo);
 			this.namedValueInfoCache.put(parameter, namedValueInfo);
 		}
@@ -185,6 +194,8 @@ public abstract class AbstractNamedValueMethodArgumentResolver implements Handle
 	}
 
 	/**
+	 *
+	 * 根据参数类型和值的名称解析出参数值
 	 * Resolve the given parameter type and value name into an argument value.
 	 * @param name the name of the value being resolved
 	 * @param parameter the method parameter to resolve to an argument value
@@ -250,6 +261,7 @@ public abstract class AbstractNamedValueMethodArgumentResolver implements Handle
 
 
 	/**
+	 * 代表了名称和值的信息
 	 * Represents the information about a named value, including name, whether it's required and a default value.
 	 */
 	protected static class NamedValueInfo {

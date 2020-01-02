@@ -102,6 +102,9 @@ public class ServletInvocableHandlerMethod extends InvocableHandlerMethod {
 	}
 
 	/**
+	 *
+	 * 处理器方法执行
+	 *
 	 * Invokes the method and handles the return value through one of the
 	 * configured {@link HandlerMethodReturnValueHandler}s.
 	 * @param webRequest the current request
@@ -111,6 +114,7 @@ public class ServletInvocableHandlerMethod extends InvocableHandlerMethod {
 	public void invokeAndHandle(ServletWebRequest webRequest,
 			ModelAndViewContainer mavContainer, Object... providedArgs) throws Exception {
 
+		//处理请求 这里主要做的就是将请求的参数进行适配到处理器方法中  比如各种注解啊 绑定啊什么的
 		Object returnValue = invokeForRequest(webRequest, mavContainer, providedArgs);
 		setResponseStatus(webRequest);
 
@@ -127,6 +131,7 @@ public class ServletInvocableHandlerMethod extends InvocableHandlerMethod {
 
 		mavContainer.setRequestHandled(false);
 		try {
+			//处理返回值
 			this.returnValueHandlers.handleReturnValue(
 					returnValue, getReturnValueType(returnValue), mavContainer, webRequest);
 		}

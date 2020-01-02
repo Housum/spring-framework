@@ -23,6 +23,9 @@ import org.springframework.beans.BeansException;
 import org.springframework.core.ResolvableType;
 
 /**
+ *
+ * 提供列表方式展示的BeanFactory
+ *
  * Extension of the {@link BeanFactory} interface to be implemented by bean factories
  * that can enumerate all their bean instances, rather than attempting bean lookup
  * by name one by one as requested by clients. BeanFactory implementations that
@@ -116,6 +119,8 @@ public interface ListableBeanFactory extends BeanFactory {
 	String[] getBeanNamesForType(ResolvableType type);
 
 	/**
+	 * 返回指定类型的Bean的名称
+	 *
 	 * Return the names of beans matching the given type (including subclasses),
 	 * judging from either bean definitions or the value of {@code getObjectType}
 	 * in the case of FactoryBeans.
@@ -143,6 +148,8 @@ public interface ListableBeanFactory extends BeanFactory {
 	String[] getBeanNamesForType(Class<?> type);
 
 	/**
+     * 获取指定类型的Bean的名称
+     *
 	 * Return the names of beans matching the given type (including subclasses),
 	 * judging from either bean definitions or the value of {@code getObjectType}
 	 * in the case of FactoryBeans.
@@ -162,14 +169,14 @@ public interface ListableBeanFactory extends BeanFactory {
 	 * order of definition</i> in the backend configuration, as far as possible.
 	 * @param type the class or interface to match, or {@code null} for all bean names
 	 * @param includeNonSingletons whether to include prototype or scoped beans too
-	 * or just singletons (also applies to FactoryBeans)
+	 * or just singletons (also applies to FactoryBeans) 是否包括非单例
 	 * @param allowEagerInit whether to initialize <i>lazy-init singletons</i> and
 	 * <i>objects created by FactoryBeans</i> (or by factory methods with a
 	 * "factory-bean" reference) for the type check. Note that FactoryBeans need to be
 	 * eagerly initialized to determine their type: So be aware that passing in "true"
-	 * for this flag will initialize FactoryBeans and "factory-bean" references.
+	 * for this flag will initialize FactoryBeans and "factory-bean" references.是否包括拉加载或者是工厂Bean(BeanFactory或者有工厂方法的
 	 * @return the names of beans (or objects created by FactoryBeans) matching
-	 * the given object type (including subclasses), or an empty array if none
+	 * the given object type (including subclasses), or an empty array if none )
 	 * @see FactoryBean#getObjectType
 	 * @see BeanFactoryUtils#beanNamesForTypeIncludingAncestors(ListableBeanFactory, Class, boolean, boolean)
 	 */

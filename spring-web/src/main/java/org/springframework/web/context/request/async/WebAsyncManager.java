@@ -35,6 +35,8 @@ import org.springframework.web.context.request.async.DeferredResult.DeferredResu
 import org.springframework.web.util.UrlPathHelper;
 
 /**
+ * 主要是处理异步请求的
+ *
  * The central class for managing asynchronous request processing, mainly intended
  * as an SPI and not typically used directly by application classes.
  *

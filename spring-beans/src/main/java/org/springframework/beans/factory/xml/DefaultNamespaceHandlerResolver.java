@@ -50,6 +50,9 @@ public class DefaultNamespaceHandlerResolver implements NamespaceHandlerResolver
 
 	/**
 	 * The location to look for the mapping files. Can be present in multiple JAR files.
+	 * 所有的定义都放在了META-INF/spring.handlers下来
+	 * 类似于这种：http\://www.springframework.org/schema/util=org.springframework.beans.factory.xml.UtilNamespaceHandler
+	 * 前面是namespace 后面是实现的NamespaceHandler
 	 */
 	public static final String DEFAULT_HANDLER_MAPPINGS_LOCATION = "META-INF/spring.handlers";
 
@@ -60,10 +63,16 @@ public class DefaultNamespaceHandlerResolver implements NamespaceHandlerResolver
 	/** ClassLoader to use for NamespaceHandler classes */
 	private final ClassLoader classLoader;
 
-	/** Resource location to search for */
+	/**
+	 * Resource location to search for
+	 * 查询的地址
+	 * */
 	private final String handlerMappingsLocation;
 
-	/** Stores the mappings from namespace URI to NamespaceHandler class name / instance */
+	/**
+	 * Stores the mappings from namespace URI to NamespaceHandler class name / instance
+	 * key 是命名空间 value是NamespaceHandler的类名称或者是NamespaceHandler的实例
+	 * */
 	private volatile Map<String, Object> handlerMappings;
 
 
@@ -127,8 +136,11 @@ public class DefaultNamespaceHandlerResolver implements NamespaceHandlerResolver
 					throw new FatalBeanException("Class [" + className + "] for namespace [" + namespaceUri +
 							"] does not implement the [" + NamespaceHandler.class.getName() + "] interface");
 				}
+				//初始化类
 				NamespaceHandler namespaceHandler = (NamespaceHandler) BeanUtils.instantiateClass(handlerClass);
+				//进行内部的加载
 				namespaceHandler.init();
+				//加入到缓存中
 				handlerMappings.put(namespaceUri, namespaceHandler);
 				return namespaceHandler;
 			}

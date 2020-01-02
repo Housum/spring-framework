@@ -27,6 +27,8 @@ import org.springframework.core.ResolvableType;
 import org.springframework.util.ErrorHandler;
 
 /**
+ * 处理事件
+ *
  * Simple implementation of the {@link ApplicationEventMulticaster} interface.
  *
  * <p>Multicasts all events to all registered listeners, leaving it up to
@@ -46,10 +48,14 @@ import org.springframework.util.ErrorHandler;
  */
 public class SimpleApplicationEventMulticaster extends AbstractApplicationEventMulticaster {
 
+	/**
+	 * 执行事件的线程池
+	 */
 	private Executor taskExecutor;
-
+	/**
+	 * 处理操作
+	 */
 	private ErrorHandler errorHandler;
-
 
 	/**
 	 * Create a new SimpleApplicationEventMulticaster.
@@ -124,7 +130,9 @@ public class SimpleApplicationEventMulticaster extends AbstractApplicationEventM
 	@Override
 	public void multicastEvent(final ApplicationEvent event, ResolvableType eventType) {
 		ResolvableType type = (eventType != null ? eventType : resolveDefaultEventType(event));
+		//获取到满足条件的 Listener
 		for (final ApplicationListener<?> listener : getApplicationListeners(event, type)) {
+			//如果设置了线程池的话
 			Executor executor = getTaskExecutor();
 			if (executor != null) {
 				executor.execute(new Runnable() {
@@ -133,8 +141,7 @@ public class SimpleApplicationEventMulticaster extends AbstractApplicationEventM
 						invokeListener(listener, event);
 					}
 				});
-			}
-			else {
+			} else {
 				invokeListener(listener, event);
 			}
 		}
@@ -152,6 +159,7 @@ public class SimpleApplicationEventMulticaster extends AbstractApplicationEventM
 	 */
 	@SuppressWarnings({"unchecked", "rawtypes"})
 	protected void invokeListener(ApplicationListener listener, ApplicationEvent event) {
+		//异常处理器
 		ErrorHandler errorHandler = getErrorHandler();
 		if (errorHandler != null) {
 			try {

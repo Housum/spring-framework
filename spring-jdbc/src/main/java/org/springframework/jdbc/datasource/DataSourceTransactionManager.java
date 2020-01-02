@@ -102,6 +102,9 @@ import org.springframework.transaction.support.TransactionSynchronizationManager
 public class DataSourceTransactionManager extends AbstractPlatformTransactionManager
 		implements ResourceTransactionManager, InitializingBean {
 
+	/**
+	 * 数据源
+	 */
 	private DataSource dataSource;
 
 
@@ -176,16 +179,23 @@ public class DataSourceTransactionManager extends AbstractPlatformTransactionMan
 
 	@Override
 	protected Object doGetTransaction() {
+		//对象是保存当前数据库连接的 其中也保存了事务的状态
 		DataSourceTransactionObject txObject = new DataSourceTransactionObject();
+		//是否允许保存点
 		txObject.setSavepointAllowed(isNestedTransactionAllowed());
-		ConnectionHolder conHolder =
-				(ConnectionHolder) TransactionSynchronizationManager.getResource(this.dataSource);
+		//这里是从ThreadLocal中找到关联的资源 这其中的做法就是将当前数据源作为该线程ThreadLocal的key，因为是线程变量
+		//对于一个线程一个数据源来说 只会有一个相同的连接
+		ConnectionHolder conHolder = (ConnectionHolder) TransactionSynchronizationManager.getResource(this.dataSource);
+		//将当前的连接设置到其中 有可能是null
+		//如果不存在连接的话 那么在后面开始事务的时候将会创建一个新的连接
+		//org.springframework.jdbc.datasource.DataSourceTransactionManager.doBegin
 		txObject.setConnectionHolder(conHolder, false);
 		return txObject;
 	}
 
 	@Override
 	protected boolean isExistingTransaction(Object transaction) {
+		//当前是否存在连接  从doGetTransaction获取的DataSourceTransactionObject
 		DataSourceTransactionObject txObject = (DataSourceTransactionObject) transaction;
 		return (txObject.getConnectionHolder() != null && txObject.getConnectionHolder().isTransactionActive());
 	}
@@ -195,28 +205,35 @@ public class DataSourceTransactionManager extends AbstractPlatformTransactionMan
 	 */
 	@Override
 	protected void doBegin(Object transaction, TransactionDefinition definition) {
+		//如果在isExistingTransaction判断没有存在事务连接 那么将会走这里的逻辑 获取一个新的连接
 		DataSourceTransactionObject txObject = (DataSourceTransactionObject) transaction;
 		Connection con = null;
 
 		try {
-			if (txObject.getConnectionHolder() == null ||
-					txObject.getConnectionHolder().isSynchronizedWithTransaction()) {
+			//如果连接不存在
+			if (txObject.getConnectionHolder() == null ||txObject.getConnectionHolder().isSynchronizedWithTransaction()) {
+				//从数据源中获取连接
 				Connection newCon = this.dataSource.getConnection();
 				if (logger.isDebugEnabled()) {
 					logger.debug("Acquired Connection [" + newCon + "] for JDBC transaction");
 				}
+				//获取连接
 				txObject.setConnectionHolder(new ConnectionHolder(newCon), true);
 			}
 
+			//标记已经同步了 那么后面还是需要新创建
 			txObject.getConnectionHolder().setSynchronizedWithTransaction(true);
 			con = txObject.getConnectionHolder().getConnection();
 
+			//获取隔离级别
 			Integer previousIsolationLevel = DataSourceUtils.prepareConnectionForTransaction(con, definition);
 			txObject.setPreviousIsolationLevel(previousIsolationLevel);
 
 			// Switch to manual commit if necessary. This is very expensive in some JDBC drivers,
 			// so we don't want to do it unnecessarily (for example if we've explicitly
 			// configured the connection pool to set it already).
+			//如果设置的是自动提交的话 那么将会设置为手动提交 即当前是事务是交给了
+			//框架处理
 			if (con.getAutoCommit()) {
 				txObject.setMustRestoreAutoCommit(true);
 				if (logger.isDebugEnabled()) {
@@ -224,15 +241,19 @@ public class DataSourceTransactionManager extends AbstractPlatformTransactionMan
 				}
 				con.setAutoCommit(false);
 			}
+			//当前事务为激活状态
 			txObject.getConnectionHolder().setTransactionActive(true);
 
+			//设置超时时间
 			int timeout = determineTimeout(definition);
 			if (timeout != TransactionDefinition.TIMEOUT_DEFAULT) {
 				txObject.getConnectionHolder().setTimeoutInSeconds(timeout);
 			}
 
 			// Bind the session holder to the thread.
+			//如果是新创建的数据库连接 那么将其绑定到线程上面去
 			if (txObject.isNewConnectionHolder()) {
+				//将当前的连接绑定到指定key上面去
 				TransactionSynchronizationManager.bindResource(getDataSource(), txObject.getConnectionHolder());
 			}
 		}
@@ -249,9 +270,9 @@ public class DataSourceTransactionManager extends AbstractPlatformTransactionMan
 	@Override
 	protected Object doSuspend(Object transaction) {
 		DataSourceTransactionObject txObject = (DataSourceTransactionObject) transaction;
+		//这里很重要 挂起的时候 其实连接是空的 那么在后面doBegin的时候检查到是没有连接的
 		txObject.setConnectionHolder(null);
-		ConnectionHolder conHolder = (ConnectionHolder)
-				TransactionSynchronizationManager.unbindResource(this.dataSource);
+		ConnectionHolder conHolder = (ConnectionHolder)TransactionSynchronizationManager.unbindResource(this.dataSource);
 		return conHolder;
 	}
 

@@ -46,6 +46,9 @@ import org.springframework.web.util.UriComponentsBuilder;
 import org.springframework.web.util.WebUtils;
 
 /**
+ *
+ * RequestParam注解参数的解析
+ *
  * Resolves method arguments annotated with @{@link RequestParam}, arguments of
  * type {@link MultipartFile} in conjunction with Spring's {@link MultipartResolver}
  * abstraction, and arguments of type {@code javax.servlet.http.Part} in conjunction
@@ -131,6 +134,7 @@ public class RequestParamMethodArgumentResolver extends AbstractNamedValueMethod
 			}
 		}
 		else {
+			//如果存在RequestPart
 			if (parameter.hasParameterAnnotation(RequestPart.class)) {
 				return false;
 			}
@@ -160,10 +164,12 @@ public class RequestParamMethodArgumentResolver extends AbstractNamedValueMethod
 				WebUtils.getNativeRequest(servletRequest, MultipartHttpServletRequest.class);
 
 		Object mpArg = MultipartResolutionDelegate.resolveMultipartArgument(name, parameter, servletRequest);
+		//如果解析出来非文件上传的话 那么这里是可以直接返回的 不需要在进行处理了
 		if (mpArg != MultipartResolutionDelegate.UNRESOLVABLE) {
 			return mpArg;
 		}
 
+		//文件上传在第一步没有被解析出来 那么这一步尝试直接从中获取 不经过其他的骚操作
 		Object arg = null;
 		if (multipartRequest != null) {
 			List<MultipartFile> files = multipartRequest.getFiles(name);
@@ -171,6 +177,7 @@ public class RequestParamMethodArgumentResolver extends AbstractNamedValueMethod
 				arg = (files.size() == 1 ? files.get(0) : files);
 			}
 		}
+		//最后还没有的话 直接从参数中获取
 		if (arg == null) {
 			String[] paramValues = request.getParameterValues(name);
 			if (paramValues != null) {

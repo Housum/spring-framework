@@ -54,20 +54,28 @@ import org.springframework.beans.factory.xml.NamespaceHandlerSupport;
  */
 public class AopNamespaceHandler extends NamespaceHandlerSupport {
 
-	/**
-	 * Register the {@link BeanDefinitionParser BeanDefinitionParsers} for the
-	 * '{@code config}', '{@code spring-configured}', '{@code aspectj-autoproxy}'
-	 * and '{@code scoped-proxy}' tags.
-	 */
-	@Override
-	public void init() {
-		// In 2.0 XSD as well as in 2.1 XSD.
-		registerBeanDefinitionParser("config", new ConfigBeanDefinitionParser());
-		registerBeanDefinitionParser("aspectj-autoproxy", new AspectJAutoProxyBeanDefinitionParser());
-		registerBeanDefinitionDecorator("scoped-proxy", new ScopedProxyBeanDefinitionDecorator());
-
-		// Only in 2.0 XSD: moved to context namespace as of 2.1
-		registerBeanDefinitionParser("spring-configured", new SpringConfiguredBeanDefinitionParser());
-	}
+    /**
+     * Register the {@link BeanDefinitionParser BeanDefinitionParsers} for the
+     * '{@code config}', '{@code spring-configured}', '{@code aspectj-autoproxy}'
+     * and '{@code scoped-proxy}' tags.
+     */
+    @Override
+    public void init() {
+        // In 2.0 XSD as well as in 2.1 XSD.
+        //AOP表达式
+		/*
+		aop:config>
+            <aop:pointcut id="fooServiceOperation" expression="execution(* x.y.service.FooService.*(..))"/>
+            <aop:advisor advice-ref="txAdvice" pointcut-ref="fooServiceOperation"/>
+        </aop:config>
+		* */
+        registerBeanDefinitionParser("config", new ConfigBeanDefinitionParser());
+        //开启AOP
+        registerBeanDefinitionParser("aspectj-autoproxy", new AspectJAutoProxyBeanDefinitionParser());
+        //暴露被代理的对象
+        registerBeanDefinitionDecorator("scoped-proxy", new ScopedProxyBeanDefinitionDecorator());
+        // Only in 2.0 XSD: moved to context namespace as of 2.1
+        registerBeanDefinitionParser("spring-configured", new SpringConfiguredBeanDefinitionParser());
+    }
 
 }

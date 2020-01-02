@@ -29,6 +29,9 @@ import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 
 /**
+ *
+ * 注解方法获取事务信息
+ *
  * Implementation of the
  * {@link org.springframework.transaction.interceptor.TransactionAttributeSource}
  * interface for working with transaction metadata in JDK 1.5+ annotation format.
@@ -84,8 +87,10 @@ public class AnnotationTransactionAttributeSource extends AbstractFallbackTransa
 	 * (typically used with AspectJ class weaving)
 	 */
 	public AnnotationTransactionAttributeSource(boolean publicMethodsOnly) {
+		//默认只允许public方法
 		this.publicMethodsOnly = publicMethodsOnly;
 		this.annotationParsers = new LinkedHashSet<TransactionAnnotationParser>(2);
+		//解析器
 		this.annotationParsers.add(new SpringTransactionAnnotationParser());
 		if (jta12Present) {
 			this.annotationParsers.add(new JtaTransactionAnnotationParser());

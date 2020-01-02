@@ -50,6 +50,9 @@ public class InjectionMetadata {
 
 	private final Class<?> targetClass;
 
+	/**
+	 * 注入的元素
+	 */
 	private final Collection<InjectedElement> injectedElements;
 
 	private volatile Set<InjectedElement> checkedElements;
@@ -66,6 +69,7 @@ public class InjectionMetadata {
 		for (InjectedElement element : this.injectedElements) {
 			Member member = element.getMember();
 			if (!beanDefinition.isExternallyManagedConfigMember(member)) {
+				//TODO ?
 				beanDefinition.registerExternallyManagedConfigMember(member);
 				checkedElements.add(element);
 				if (logger.isDebugEnabled()) {

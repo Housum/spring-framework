@@ -25,6 +25,8 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextException;
 
 /**
+ * 提供多次刷新AbstractApplicationContext的能力
+ *
  * Base class for {@link org.springframework.context.ApplicationContext}
  * implementations which are supposed to support multiple calls to {@link #refresh()},
  * creating a new internal bean factory instance every time.
@@ -38,7 +40,7 @@ import org.springframework.context.ApplicationContextException;
  * typically delegating to one or more specific bean definition readers.
  *
  * <p><b>Note that there is a similar base class for WebApplicationContexts.</b>
- * {@link org.springframework.web.context.support.AbstractRefreshableWebApplicationContext}
+// * {@link org.springframework.web.context.support.AbstractRefreshableWebApplicationContext}
  * provides the same subclassing strategy, but additionally pre-implements
  * all context functionality for web environments. There is also a
  * pre-defined way to receive config locations for a web context.
@@ -63,11 +65,19 @@ import org.springframework.context.ApplicationContextException;
  */
 public abstract class AbstractRefreshableApplicationContext extends AbstractApplicationContext {
 
+	/**
+	 * 是否支持Bean定义覆盖
+	 */
 	private Boolean allowBeanDefinitionOverriding;
-
+	/**
+	 * 是否允许循环依赖
+	 */
 	private Boolean allowCircularReferences;
 
-	/** Bean factory for this context */
+	/**
+	 * Bean factory for this context
+	 * 该类BeanDefinitionRegistry,AliasRegistry,BeanFactory,SingletonBeanFactory能力
+	 * */
 	private DefaultListableBeanFactory beanFactory;
 
 	/** Synchronization monitor for the internal BeanFactory */
@@ -118,14 +128,17 @@ public abstract class AbstractRefreshableApplicationContext extends AbstractAppl
 	 */
 	@Override
 	protected final void refreshBeanFactory() throws BeansException {
+		//如果存在的话 那么进行销毁 并且重新的进行加载
 		if (hasBeanFactory()) {
 			destroyBeans();
 			closeBeanFactory();
 		}
 		try {
+			//进行创建
 			DefaultListableBeanFactory beanFactory = createBeanFactory();
 			beanFactory.setSerializationId(getId());
 			customizeBeanFactory(beanFactory);
+			//加载定义
 			loadBeanDefinitions(beanFactory);
 			synchronized (this.beanFactoryMonitor) {
 				this.beanFactory = beanFactory;
@@ -197,6 +210,7 @@ public abstract class AbstractRefreshableApplicationContext extends AbstractAppl
 	 * @see org.springframework.beans.factory.support.DefaultListableBeanFactory#setAllowRawInjectionDespiteWrapping
 	 */
 	protected DefaultListableBeanFactory createBeanFactory() {
+		//创建DefaultListableBeanFactory
 		return new DefaultListableBeanFactory(getInternalParentBeanFactory());
 	}
 

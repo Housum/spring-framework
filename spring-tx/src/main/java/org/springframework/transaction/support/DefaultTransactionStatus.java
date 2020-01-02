@@ -48,6 +48,7 @@ import org.springframework.transaction.SavepointManager;
  */
 public class DefaultTransactionStatus extends AbstractTransactionStatus {
 
+	//事务资源
 	private final Object transaction;
 
 	private final boolean newTransaction;
@@ -58,6 +59,7 @@ public class DefaultTransactionStatus extends AbstractTransactionStatus {
 
 	private final boolean debug;
 
+	//挂起的资源 比如上一个的事务
 	private final Object suspendedResources;
 
 
