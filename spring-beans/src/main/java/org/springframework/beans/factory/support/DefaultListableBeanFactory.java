@@ -147,7 +147,10 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 	/** Optional id for this factory, for serialization purposes */
 	private String serializationId;
 
-	/** Whether to allow re-registration of a different definition with the same name */
+	/**
+	 *  Whether to allow re-registration of a different definition with the same name
+	 * 是否允许重新注册相同Bean名称的定义
+	 * */
 	private boolean allowBeanDefinitionOverriding = true;
 
 	/** Whether to allow eager class loading even for lazy-init beans */
@@ -186,7 +189,10 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 	 * */
 	private volatile List<String> beanDefinitionNames = new ArrayList<String>(256);
 
-	/** List of names of manually registered singletons, in registration order */
+	/**
+	 *  List of names of manually registered singletons, in registration order
+	 *  人为注册的单例 比如通过接口方式注册的
+	 * */
 	private volatile Set<String> manualSingletonNames = new LinkedHashSet<String>(16);
 
 	/** Cached array of bean definition names in case of frozen configuration */

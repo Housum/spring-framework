@@ -128,6 +128,7 @@ public class BeanFactoryAspectJAdvisorsBuilder {
 							}
 							MetadataAwareAspectInstanceFactory factory = new PrototypeAspectInstanceFactory(this.beanFactory, beanName);
 							this.aspectFactoryCache.put(beanName, factory);
+							//这一步就是从其中获取到切面容器
 							advisors.addAll(this.advisorFactory.getAdvisors(factory));
 						}
 					}

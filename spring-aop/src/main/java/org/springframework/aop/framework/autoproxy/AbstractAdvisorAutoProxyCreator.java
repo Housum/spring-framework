@@ -88,7 +88,7 @@ public abstract class AbstractAdvisorAutoProxyCreator extends AbstractAutoProxyC
 	 */
 	protected List<Advisor> findEligibleAdvisors(Class<?> beanClass, String beanName) {
 		//
-		//这里分两部分 一部分是实现了接口,这一步其实就是从BeanFactory中去查询所有的Advisor类(其中封装了通知)
+		//这里分两部分 一部分是实现了接口,这一步其实就是从BeanFactory中去查询所有的Advisor类(其中封装了通知，比如事务就是实现了这个)
 		//一部分是使用注解的,这一步就是查询注解存在@Aspect的所有类
 		List<Advisor> candidateAdvisors = findCandidateAdvisors();
 		//第一步拿到的是所有的通知点 这一步就是根据切点匹配当前的Bean,看该类是否可以织入通知

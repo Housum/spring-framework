@@ -1041,6 +1041,7 @@ public class DispatcherServlet extends FrameworkServlet {
                     return;
                 }
 
+                //如果没有返回View的话 那么默认设置一个
                 applyDefaultViewName(processedRequest, mv);
                 //执行拦截器的后置处理
                 mappedHandler.applyPostHandle(processedRequest, response, mv);

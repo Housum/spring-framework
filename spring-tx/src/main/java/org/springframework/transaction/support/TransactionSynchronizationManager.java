@@ -78,6 +78,8 @@ public abstract class TransactionSynchronizationManager {
 	private static final Log logger = LogFactory.getLog(TransactionSynchronizationManager.class);
 	/**
 	 * 事务资源
+	 * Map的key为数据源 值为连接
+	 *
 	 */
 	private static final ThreadLocal<Map<Object, Object>> resources =
 			new NamedThreadLocal<Map<Object, Object>>("Transactional resources");

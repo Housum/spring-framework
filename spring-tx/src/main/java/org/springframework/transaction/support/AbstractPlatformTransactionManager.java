@@ -334,14 +334,14 @@ public abstract class AbstractPlatformTransactionManager implements PlatformTran
 	 */
 	@Override
 	public final TransactionStatus getTransaction(TransactionDefinition definition) throws TransactionException {
-		//获取事务 如果是第一次获取事务的话 那么返回的将会是null 那么后面将会创建事务
+		//获取事务 如果是第一次获取事务的话 那么对象中的连接资源将会是null 后面将会创建事务
 		Object transaction = doGetTransaction();
 
 		// Cache debug flag to avoid repeated checks.
 		boolean debugEnabled = logger.isDebugEnabled();
 
 		if (definition == null) {
-			//如果没有定义属性的话 那么这里将使用默认的
+			//如果没有定义事务属性的话 那么这里将使用默认的
 			// Use defaults if no transaction definition given.
 			definition = new DefaultTransactionDefinition();
 		}
@@ -352,6 +352,9 @@ public abstract class AbstractPlatformTransactionManager implements PlatformTran
 			// Existing transaction found -> check propagation behavior to find out how to behave.
 			return handleExistingTransaction(definition, transaction, debugEnabled);
 		}
+
+
+		//以下都是事务不存在情况
 
 		// Check definition settings for new transaction.
 		if (definition.getTimeout() < TransactionDefinition.TIMEOUT_DEFAULT) {
@@ -1059,7 +1062,7 @@ public abstract class AbstractPlatformTransactionManager implements PlatformTran
 	/**
 	 *
 	 * 返回一个代表当前事务状态的对象 一般子类实现的都是具体的对象 比如保存了当前事务的连接
-	 * 事务的一些其他属性等等
+	 * 事务的一些其他属性等等 也有可能表示的是不存在的事务
 	 *
 	 * Return a transaction object for the current transaction state.
 	 * <p>The returned object will usually be specific to the concrete transaction
@@ -1217,8 +1220,8 @@ public abstract class AbstractPlatformTransactionManager implements PlatformTran
 	 * @see DefaultTransactionStatus#isLocalRollbackOnly()
 	 * @see org.springframework.transaction.TransactionStatus#setRollbackOnly()
 	 * @see org.springframework.transaction.UnexpectedRollbackException
-	 * @see javax.transaction.UserTransaction#commit()
-	 * @see javax.transaction.RollbackException
+//	 * @see javax.transaction.UserTransaction#commit()
+//	 * @see javax.transaction.RollbackException
 	 */
 	protected boolean shouldCommitOnGlobalRollbackOnly() {
 		return false;
